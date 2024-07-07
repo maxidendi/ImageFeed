@@ -7,19 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F61F4E72C385C96008347C1 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F61F4E62C385C96008347C1 /* ImagesListCell.swift */; };
 		3FF83B7C2C3666C4001ED6D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF83B7B2C3666C4001ED6D0 /* AppDelegate.swift */; };
 		3FF83B7E2C3666C4001ED6D0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF83B7D2C3666C4001ED6D0 /* SceneDelegate.swift */; };
-		3FF83B802C3666C4001ED6D0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF83B7F2C3666C4001ED6D0 /* ViewController.swift */; };
+		3FF83B802C3666C4001ED6D0 /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF83B7F2C3666C4001ED6D0 /* ImagesListViewController.swift */; };
 		3FF83B832C3666C4001ED6D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B822C3666C4001ED6D0 /* Base */; };
 		3FF83B852C3666C5001ED6D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B842C3666C5001ED6D0 /* Assets.xcassets */; };
 		3FF83B882C3666C5001ED6D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B872C3666C5001ED6D0 /* Base */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3F61F4E62C385C96008347C1 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		3FF83B782C3666C4001ED6D0 /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FF83B7B2C3666C4001ED6D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3FF83B7D2C3666C4001ED6D0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		3FF83B7F2C3666C4001ED6D0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		3FF83B7F2C3666C4001ED6D0 /* ImagesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListViewController.swift; sourceTree = "<group>"; };
 		3FF83B822C3666C4001ED6D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3FF83B842C3666C5001ED6D0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3FF83B872C3666C5001ED6D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -37,6 +39,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F61F4E82C385CDE008347C1 /* ImagesList */ = {
+			isa = PBXGroup;
+			children = (
+				3FF83B7F2C3666C4001ED6D0 /* ImagesListViewController.swift */,
+				3F61F4E62C385C96008347C1 /* ImagesListCell.swift */,
+			);
+			path = ImagesList;
+			sourceTree = "<group>";
+		};
 		3FF83B6F2C3666C4001ED6D0 = {
 			isa = PBXGroup;
 			children = (
@@ -56,9 +67,9 @@
 		3FF83B7A2C3666C4001ED6D0 /* ImageFeed */ = {
 			isa = PBXGroup;
 			children = (
+				3F61F4E82C385CDE008347C1 /* ImagesList */,
 				3FF83B7B2C3666C4001ED6D0 /* AppDelegate.swift */,
 				3FF83B7D2C3666C4001ED6D0 /* SceneDelegate.swift */,
-				3FF83B7F2C3666C4001ED6D0 /* ViewController.swift */,
 				3FF83B812C3666C4001ED6D0 /* Main.storyboard */,
 				3FF83B862C3666C5001ED6D0 /* LaunchScreen.storyboard */,
 				3FF83B842C3666C5001ED6D0 /* Assets.xcassets */,
@@ -138,7 +149,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3FF83B802C3666C4001ED6D0 /* ViewController.swift in Sources */,
+				3FF83B802C3666C4001ED6D0 /* ImagesListViewController.swift in Sources */,
+				3F61F4E72C385C96008347C1 /* ImagesListCell.swift in Sources */,
 				3FF83B7C2C3666C4001ED6D0 /* AppDelegate.swift in Sources */,
 				3FF83B7E2C3666C4001ED6D0 /* SceneDelegate.swift in Sources */,
 			);
