@@ -8,6 +8,10 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
+    
+    //MARK: - Properties
+    
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map({"\($0)"})
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -16,6 +20,8 @@ final class ImagesListViewController: UIViewController {
         return formatter
     }()
     @IBOutlet private var tableView: UITableView!
+    
+    //MARK: - Methods of lifecircle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,21 +32,35 @@ final class ImagesListViewController: UIViewController {
             right: 0)
     }
     
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let layerGradient = CAGradientLayer()
-        layerGradient.colors = [UIColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 0.00).cgColor,
-                                UIColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 0.20).cgColor]
-        layerGradient.frame = cell.bottomGradient.bounds
-        cell.bottomGradient.layer.addSublayer(layerGradient)
-        
+    //MARK: - Methods
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier {
+            guard let viewController = segue.destination as? SingleImageViewController,
+                  let indexPath = sender as? IndexPath 
+            else {
+                assertionFailure("Invalid segue destination")
+                return
+            }
+            let image = UIImage(named: photosName[indexPath.row])
+            viewController.image = image
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+    
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         cell.likeButton.imageView?.image = indexPath.row % 2 == 0 ?
-                                UIImage(named: "ActiveLike") :
-                                UIImage(named: "NoActiveLike")
+                                UIImage(named: "active_like") :
+                                UIImage(named: "no_active_like")
         cell.dateLabel.text = dateFormatter.string(from: Date())
         guard let image = UIImage(named: photosName[indexPath.row]) else { return }
         cell.imageOfCell.image = image
+        cell.selectionStyle = .none
     }
 }
+
+//MARK: - Extensions
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -57,6 +77,11 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else { return .zero }
         let imageInsets = UIEdgeInsets(top: 4,
