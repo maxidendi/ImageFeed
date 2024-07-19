@@ -123,6 +123,6 @@ final class ProfileViewController: UIViewController {
         self.descriptionLabel = descriptionLabel
     }
     
-    @IBAction func logoutButtonTapped(_ sender: Any) {
+    @IBAction private func logoutButtonTapped(_ sender: Any) {
     }
 }
