@@ -12,7 +12,8 @@ final class ImagesListViewController: UIViewController {
     //MARK: - Properties
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let photosName: [String] = Array(0..<20).map({"\($0)"})
+    private let photosName: [String] = Array(0..<20).map({"\($0)"})    
+    private var imagesListCell: ImagesListCell?
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -48,16 +49,6 @@ final class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
-    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        cell.likeButton.imageView?.image = indexPath.row % 2 == 0 ?
-                                UIImage(named: "active_like") :
-                                UIImage(named: "no_active_like")
-        cell.dateLabel.text = dateFormatter.string(from: Date())
-        guard let image = UIImage(named: photosName[indexPath.row]) else { return }
-        cell.imageOfCell.image = image
-        cell.selectionStyle = .none
-    }
 }
 
 //MARK: - Extensions
@@ -70,7 +61,8 @@ extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
-        configCell(for: imageListCell, with: indexPath)
+        let image = UIImage(named: photosName[indexPath.row]) ?? UIImage()
+        imageListCell.configCell(dateFormatter: dateFormatter, with: indexPath, cellImage: image)
         return imageListCell
     }
 }
