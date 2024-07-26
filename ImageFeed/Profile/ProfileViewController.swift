@@ -21,12 +21,7 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(
-            red: 0.10,
-            green: 0.11,
-            blue: 0.13,
-            alpha: 1.00)
-        
+        view.backgroundColor = UIColor.ypBlack
         addProfilePhoto()
         addLogoutButton()
         addNameLabel()

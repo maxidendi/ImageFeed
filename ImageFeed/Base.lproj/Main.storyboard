@@ -4,7 +4,9 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -24,7 +26,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="weW-uC-rUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1837.4045801526718" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="-784" y="-1421"/>
         </scene>
         <!--Auth ViewController-->
         <scene sceneID="InR-cY-aDn">
@@ -58,10 +60,13 @@
                                         <integer key="value" value="16"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <segue destination="O19-ro-iM6" kind="show" identifier="ShowWebView" id="UH3-d3-w4L"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="7KG-b1-yIT"/>
-                        <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="hjR-eS-HdK" firstAttribute="leading" secondItem="7KG-b1-yIT" secondAttribute="leading" constant="16" id="B6J-75-i3o"/>
                             <constraint firstItem="7KG-b1-yIT" firstAttribute="trailing" secondItem="hjR-eS-HdK" secondAttribute="trailing" constant="16" id="C1m-qt-BAB"/>
@@ -74,7 +79,42 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3lc-z7-GXw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-910.68702290076328" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="141" y="-1421"/>
+        </scene>
+        <!--WebView ViewController-->
+        <scene sceneID="rT6-On-tq8">
+            <objects>
+                <viewController title="WebView ViewController" id="O19-ro-iM6" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3Lq-i5-NB8">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DvO-qq-Fbq">
+                                <rect key="frame" x="0.0" y="103" width="393" height="749"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="yeL-jp-2S4"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="DvO-qq-Fbq" secondAttribute="bottom" id="3f7-Me-SSF"/>
+                            <constraint firstItem="DvO-qq-Fbq" firstAttribute="top" secondItem="yeL-jp-2S4" secondAttribute="top" id="Arb-X5-HRf"/>
+                            <constraint firstAttribute="trailing" secondItem="DvO-qq-Fbq" secondAttribute="trailing" id="O0x-id-aj8"/>
+                            <constraint firstItem="DvO-qq-Fbq" firstAttribute="leading" secondItem="3Lq-i5-NB8" secondAttribute="leading" id="egm-nX-Tws"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="lUW-gy-hqw"/>
+                    <connections>
+                        <outlet property="webView" destination="DvO-qq-Fbq" id="tTK-kL-1Id"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SuU-G4-QgL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1108" y="-1421"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Jbp-FV-Sqp">
@@ -87,7 +127,7 @@
                         <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <tabBarAppearance key="standardAppearance">
-                            <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <color key="backgroundColor" name="ypBlack"/>
                         </tabBarAppearance>
                     </tabBar>
                     <connections>
@@ -109,8 +149,8 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ITI-S6-jDL">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="sectionIndexBackgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="backgroundColor" name="ypBlack"/>
+                                <color key="sectionIndexBackgroundColor" name="ypBlack"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="195" id="8BA-rb-tJS" userLabel="Images List Cell" customClass="ImagesListCell" customModule="ImageFeed" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="195"/>
@@ -188,7 +228,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="ITI-S6-jDL" secondAttribute="bottom" id="5g3-Xc-TWI"/>
                             <constraint firstAttribute="trailing" secondItem="ITI-S6-jDL" secondAttribute="trailing" id="OeW-6z-mN7"/>
@@ -255,7 +295,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gdr-uc-kRa"/>
-                        <color key="backgroundColor" red="0.10196078431372549" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="X3j-JH-4Rf" firstAttribute="trailing" secondItem="gdr-uc-kRa" secondAttribute="trailing" id="4NQ-U5-LmU"/>
                             <constraint firstItem="buf-gI-qGD" firstAttribute="top" secondItem="gdr-uc-kRa" secondAttribute="top" id="89I-ft-mab"/>
@@ -302,5 +342,11 @@
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
         <image name="unsplash_logo" width="60" height="60"/>
+        <namedColor name="ypBlack">
+            <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
