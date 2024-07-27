@@ -18,13 +18,30 @@ final class WebViewViewController: UIViewController {
     //MARK: - Properties
     
     @IBOutlet private var webView: WKWebView!
+    @IBOutlet private var progressView: UIProgressView!
     weak var authViewControllerDelegate: WebViewViewControllerDelegate?
     
     //MARK: - Methods of lifecircle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadAuthView()
         webView.navigationDelegate = self
+        loadAuthView()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        webView.addObserver(
+            self,
+            forKeyPath: #keyPath(WKWebView.estimatedProgress),
+            options: .new, 
+            context: nil)
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        webView.removeObserver(
+            self,
+            forKeyPath: #keyPath(WKWebView.estimatedProgress),
+            context: nil)
     }
     
     //MARK: - Methods
@@ -43,6 +60,22 @@ final class WebViewViewController: UIViewController {
         let request = URLRequest(url: url)
         webView.load(request)
     }
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey : Any]?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        if keyPath == #keyPath(WKWebView.estimatedProgress) {
+            updateProgress()
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
+    private func updateProgress() {
+        progressView.progress = Float(webView.estimatedProgress)
+        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
+    }
 }
 
 //MARK: - Extensions
@@ -54,8 +87,10 @@ extension WebViewViewController: WKNavigationDelegate {
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
         if let code = code(from: navigationAction) {
-            authViewControllerDelegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
+            authViewControllerDelegate?.webViewViewController(
+                self,
+                didAuthenticateWithCode: code)
         } else {
             decisionHandler(.allow)
         }

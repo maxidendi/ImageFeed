@@ -97,18 +97,26 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kKy-yo-sKQ">
+                                <rect key="frame" x="0.0" y="103" width="393" height="4"/>
+                                <color key="progressTintColor" name="ypBlack"/>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="yeL-jp-2S4"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="DvO-qq-Fbq" secondAttribute="bottom" id="3f7-Me-SSF"/>
+                            <constraint firstItem="kKy-yo-sKQ" firstAttribute="top" secondItem="yeL-jp-2S4" secondAttribute="top" id="5Rz-Ce-vcA"/>
                             <constraint firstItem="DvO-qq-Fbq" firstAttribute="top" secondItem="yeL-jp-2S4" secondAttribute="top" id="Arb-X5-HRf"/>
+                            <constraint firstItem="kKy-yo-sKQ" firstAttribute="leading" secondItem="yeL-jp-2S4" secondAttribute="leading" id="FzK-Qe-QRK"/>
                             <constraint firstAttribute="trailing" secondItem="DvO-qq-Fbq" secondAttribute="trailing" id="O0x-id-aj8"/>
                             <constraint firstItem="DvO-qq-Fbq" firstAttribute="leading" secondItem="3Lq-i5-NB8" secondAttribute="leading" id="egm-nX-Tws"/>
+                            <constraint firstItem="yeL-jp-2S4" firstAttribute="trailing" secondItem="kKy-yo-sKQ" secondAttribute="trailing" id="ygL-bg-cNI"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="lUW-gy-hqw"/>
                     <connections>
+                        <outlet property="progressView" destination="kKy-yo-sKQ" id="N36-Ea-GmE"/>
                         <outlet property="webView" destination="DvO-qq-Fbq" id="tTK-kL-1Id"/>
                     </connections>
                 </viewController>
