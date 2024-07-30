@@ -29,17 +29,20 @@ extension URLSession {
                       let response,
                       let statusCode = (response as? HTTPURLResponse)?.statusCode
                 else {
+                    print("Network error:\(NetworkErrors.urlSessionError)")
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.urlSessionError))
                 }
                 guard 200..<300 ~= statusCode
                 else {
+                    print("Network error:\(NetworkErrors.httpsStatusCodeError(statusCode))")
                     print(String(data: data, encoding: .utf8) as Any)
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.httpsStatusCodeError(statusCode)))
                 }
                 return fulfillCompletionOnMainThread(.success(data))
             }
+            print("Network error:\(NetworkErrors.urlRequestError(error))")
             fulfillCompletionOnMainThread(.failure(NetworkErrors.urlRequestError(error)))
         }
         return task

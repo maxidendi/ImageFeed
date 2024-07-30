@@ -20,6 +20,7 @@ final class ImagesListCell: UITableViewCell {
                                     UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
             layerGradient.frame = bottomGradient.bounds
             bottomGradient.layer.addSublayer(layerGradient)
+            print("set gradient")
         }
     }
     @IBOutlet private weak var dateLabel: UILabel!

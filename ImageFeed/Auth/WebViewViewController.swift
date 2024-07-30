@@ -8,28 +8,27 @@
 import UIKit
 import WebKit
 
-protocol WebViewViewControllerDelegate: AnyObject {
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
-}
-
 final class WebViewViewController: UIViewController {
     
     //MARK: - Properties
     
     @IBOutlet private var webView: WKWebView!
     @IBOutlet private var progressView: UIProgressView!
-    weak var authViewControllerDelegate: WebViewViewControllerDelegate?
+    weak var delegate: WebViewViewControllerDelegate?
     
     //MARK: - Methods of lifecircle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        webView.backgroundColor = .white
         webView.navigationDelegate = self
         loadAuthView()
+        
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.navigationBar.barTintColor = .white
+        setNeedsStatusBarAppearanceUpdate()
         webView.addObserver(
             self,
             forKeyPath: #keyPath(WKWebView.estimatedProgress),
@@ -46,9 +45,14 @@ final class WebViewViewController: UIViewController {
     
     //MARK: - Methods
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
+    
     private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: Constants.unsplashAuthorizeURLString) else {
-            return
+        guard var urlComponents = URLComponents(string: Constants.unsplashAuthorizeURLString) 
+        else {
+            return print("Invalid authorization URL")
         }
         urlComponents.queryItems  = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -69,7 +73,11 @@ final class WebViewViewController: UIViewController {
         if keyPath == #keyPath(WKWebView.estimatedProgress) {
             updateProgress()
         } else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+            super.observeValue(
+                forKeyPath: keyPath,
+                of: object,
+                change: change,
+                context: context)
         }
     }
     private func updateProgress() {
@@ -88,7 +96,7 @@ extension WebViewViewController: WKNavigationDelegate {
     ) {
         if let code = code(from: navigationAction) {
             decisionHandler(.cancel)
-            authViewControllerDelegate?.webViewViewController(
+            delegate?.webViewViewController(
                 self,
                 didAuthenticateWithCode: code)
         } else {
