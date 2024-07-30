@@ -38,22 +38,23 @@ final class OAuth2Service {
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         let request = makeOAuthTokenRequest(code: code)
-        guard let request else { return }
+        guard let request else {
+            print("Invalid fetch token request")
+            return
+        }
         let task = URLSession.shared.data(for: request) { result in
             switch result {
             case .success(let data):
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    let token = response.bearerToken
-                    OAuth2TokenStorage.shared.token = token
+                    let token = response.token
                     completion(.success(token))
                 } catch {
-                    print(error.localizedDescription)
+                    print("OAuth token decode error: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print(error.localizedDescription)
                 completion(.failure(error))
             }
         }

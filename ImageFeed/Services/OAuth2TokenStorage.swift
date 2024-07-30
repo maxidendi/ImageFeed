@@ -21,12 +21,9 @@ final class OAuth2TokenStorage {
         case token
     }
 
-    var token: String {
+    var token: String? {
         get {
-            guard let token = storage.string(forKey: StorageKeys.token.rawValue) else {
-                return ""
-            }
-            return token
+            storage.string(forKey: StorageKeys.token.rawValue)
         }
         set {
             storage.setValue(newValue, forKey: StorageKeys.token.rawValue)

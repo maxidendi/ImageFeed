@@ -7,11 +7,20 @@
 
 import UIKit
 
+protocol WebViewViewControllerDelegate: AnyObject {
+    func webViewViewController(
+        _ vc: WebViewViewController,
+        didAuthenticateWithCode code: String)
+    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
+}
+
+
 final class AuthViewController: UIViewController {
     
     //MARK: - Properties
     
     private let showWebViewSegueIdentifier = "ShowWebView"
+    weak var delegate: AuthViewControllerDelegate?
     
     //MARK: - Methods of lifecircle
     
@@ -24,11 +33,12 @@ final class AuthViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
-            guard let vc = segue.destination as? WebViewViewController else {
-                assertionFailure("Invalid segue destination")
+            guard let vc = segue.destination as? WebViewViewController 
+            else {
+                assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
                 return
             }
-            vc.authViewControllerDelegate = self
+            vc.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
         }
@@ -48,20 +58,27 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     //MARK: - Methods of delegate
     
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        OAuth2Service.shared.fetchOAuthToken(withCode: code) { result in
+    func webViewViewController(
+        _ vc: WebViewViewController,
+        didAuthenticateWithCode code: String
+    ) {        
+        navigationController?.popToRootViewController(animated: true)
+        OAuth2Service.shared.fetchOAuthToken(withCode: code) {[weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let token):
-                print(token)
-            case .failure(let error):
-                print(error.localizedDescription)
+                OAuth2TokenStorage.shared.token = token
+                print("Actual token: \(token)")
+                self.delegate?.didAuthenticate(self)
+            case .failure(_):
+                //TODO: code to handle error
+                break
             }
         }
-        webViewViewControllerDidCancel(vc)
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        navigationController?.popViewController(animated: true)
     }
 
 }
+
