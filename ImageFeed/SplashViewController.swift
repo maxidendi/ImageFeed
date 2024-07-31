@@ -50,9 +50,24 @@ final class SplashViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
+    
+    private func switchToImagesListFlow() {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first
+//        guard let window = UIApplication.shared.windows.first
+         else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
+        let rootController = tabBarController.instantiateViewController(withIdentifier: "ImagesListAndProfile")
+        window.rootViewController = rootController
+    }
+    
     private func chooseTheFlowToContinue() {
         if OAuth2TokenStorage.shared.token != nil {
-            performSegue(withIdentifier: showImagesListFlowSegueIdentifier, sender: nil)
+            switchToImagesListFlow()
+//            performSegue(withIdentifier: showImagesListFlowSegueIdentifier, sender: nil)
         } else {
             performSegue(withIdentifier: showAuthFlowSegueIdentifier, sender: nil)
         }
