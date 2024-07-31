@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
+        <!--Authorization Flow-->
         <scene sceneID="R99-YH-LJY">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QDF-ub-4Dg" sceneMemberID="viewController">
+                <navigationController title="Authorization Flow" automaticallyAdjustsScrollViewInsets="NO" id="QDF-ub-4Dg" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="FgD-Wq-9KM">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
@@ -152,10 +152,10 @@
             </objects>
             <point key="canvasLocation" x="-995" y="-559"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--ImagesList and Profile Flow-->
         <scene sceneID="Jbp-FV-Sqp">
             <objects>
-                <tabBarController storyboardIdentifier="ImagesListAndProfile" id="GUq-Al-gWF" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="ImagesListAndProfile" title="ImagesList and Profile Flow" id="GUq-Al-gWF" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="Gp3-Xb-LcE"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="OQa-wQ-mzb">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
@@ -184,7 +184,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ITI-S6-jDL">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="803"/>
                                 <color key="backgroundColor" name="ypBlack"/>
                                 <color key="sectionIndexBackgroundColor" name="ypBlack"/>
                                 <prototypes>
@@ -266,10 +266,10 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="ITI-S6-jDL" secondAttribute="bottom" id="5g3-Xc-TWI"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ITI-S6-jDL" secondAttribute="bottom" id="5g3-Xc-TWI"/>
                             <constraint firstAttribute="trailing" secondItem="ITI-S6-jDL" secondAttribute="trailing" id="OeW-6z-mN7"/>
                             <constraint firstItem="ITI-S6-jDL" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="lgQ-Lg-0zi"/>
-                            <constraint firstItem="ITI-S6-jDL" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="urt-d9-sED"/>
+                            <constraint firstItem="ITI-S6-jDL" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="urt-d9-sED"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="tKE-56-txL"/>
