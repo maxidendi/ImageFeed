@@ -7,10 +7,21 @@
 
 import Foundation
 
-enum NetworkErrors: Error {
+enum NetworkErrors: Error, LocalizedError {
     case httpsStatusCodeError(Int)
     case urlRequestError(Error)
     case urlSessionError
+    
+    var errorDescription: String? {
+        switch self {
+        case .httpsStatusCodeError(let code):
+            return "HTTPS Status Code Error: \(code)"
+        case .urlRequestError(let error):
+            return "URLRequest Error: \(error.localizedDescription)"
+        case .urlSessionError:
+            return "URLSession Error"
+        }
+    }
 }
 
 extension URLSession {
@@ -29,20 +40,20 @@ extension URLSession {
                       let response,
                       let statusCode = (response as? HTTPURLResponse)?.statusCode
                 else {
-                    print("Network error:\(NetworkErrors.urlSessionError)")
+                    print(NetworkErrors.urlSessionError.localizedDescription)
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.urlSessionError))
                 }
                 guard 200..<300 ~= statusCode
                 else {
-                    print("Network error:\(NetworkErrors.httpsStatusCodeError(statusCode))")
+                    print(NetworkErrors.httpsStatusCodeError(statusCode).localizedDescription)
                     print(String(data: data, encoding: .utf8) as Any)
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.httpsStatusCodeError(statusCode)))
                 }
                 return fulfillCompletionOnMainThread(.success(data))
             }
-            print("Network error:\(NetworkErrors.urlRequestError(error))")
+            print(NetworkErrors.urlRequestError(error).localizedDescription)
             fulfillCompletionOnMainThread(.failure(NetworkErrors.urlRequestError(error)))
         }
         return task
