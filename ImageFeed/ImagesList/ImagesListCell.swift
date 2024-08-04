@@ -16,10 +16,11 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet private weak var bottomGradient: UILabel!  {
         didSet {
             let layerGradient = CAGradientLayer()
-            layerGradient.colors = [UIColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 0.00).cgColor,
-                                    UIColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 0.20).cgColor]
+            layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
+                                    UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
             layerGradient.frame = bottomGradient.bounds
             bottomGradient.layer.addSublayer(layerGradient)
+            print("set gradient")
         }
     }
     @IBOutlet private weak var dateLabel: UILabel!
