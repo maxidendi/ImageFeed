@@ -8,6 +8,7 @@
 import UIKit
 
 protocol AuthViewControllerDelegate: AnyObject {
+    
     func didAuthenticate(_ vc: AuthViewController)
 }
 
@@ -17,7 +18,6 @@ final class SplashViewController: UIViewController {
     //MARK: - Properties
     
     private let showAuthFlowSegueIdentifier = "ShowAuthFlow"
-    private let showImagesListFlowSegueIdentifier = "ShowImagesListFlow"
     
     //MARK: - Methods of lifecircle
     
@@ -54,7 +54,6 @@ final class SplashViewController: UIViewController {
     private func switchToImagesListFlow() {
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = scene.windows.first
-//        guard let window = UIApplication.shared.windows.first
          else {
             assertionFailure("Invalid window configuration")
             return
@@ -67,7 +66,6 @@ final class SplashViewController: UIViewController {
     private func chooseTheFlowToContinue() {
         if OAuth2TokenStorage.shared.token != nil {
             switchToImagesListFlow()
-//            performSegue(withIdentifier: showImagesListFlowSegueIdentifier, sender: nil)
         } else {
             performSegue(withIdentifier: showAuthFlowSegueIdentifier, sender: nil)
         }
@@ -77,6 +75,7 @@ final class SplashViewController: UIViewController {
 //MARK: - Extansions
 
 extension SplashViewController: AuthViewControllerDelegate {
+    
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
     }

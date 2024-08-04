@@ -8,9 +8,11 @@
 import UIKit
 
 protocol WebViewViewControllerDelegate: AnyObject {
+    
     func webViewViewController(
         _ vc: WebViewViewController,
         didAuthenticateWithCode code: String)
+    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
@@ -78,6 +80,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
+        //TODO: sprint 11
     }
 
 }

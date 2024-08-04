@@ -12,6 +12,7 @@ final class ImagesListCell: UITableViewCell {
     //MARK: - Properties
     
     static let reuseIdentifier = "ImagesListCell"
+    
     @IBOutlet private weak var imageOfCell: UIImageView!
     @IBOutlet private weak var bottomGradient: UILabel!  {
         didSet {

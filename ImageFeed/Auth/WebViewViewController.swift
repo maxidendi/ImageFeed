@@ -23,8 +23,8 @@ final class WebViewViewController: UIViewController {
         webView.backgroundColor = .white
         webView.navigationDelegate = self
         loadAuthView()
-        
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.barTintColor = .white
@@ -35,6 +35,7 @@ final class WebViewViewController: UIViewController {
             options: .new, 
             context: nil)
     }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         webView.removeObserver(
@@ -64,6 +65,7 @@ final class WebViewViewController: UIViewController {
         let request = URLRequest(url: url)
         webView.load(request)
     }
+    
     override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
@@ -80,6 +82,7 @@ final class WebViewViewController: UIViewController {
                 context: context)
         }
     }
+    
     private func updateProgress() {
         progressView.progress = Float(webView.estimatedProgress)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
@@ -89,6 +92,7 @@ final class WebViewViewController: UIViewController {
 //MARK: - Extensions
 
 extension WebViewViewController: WKNavigationDelegate {
+    
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -103,6 +107,7 @@ extension WebViewViewController: WKNavigationDelegate {
             decisionHandler(.allow)
         }
     }
+    
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url,
            let urlComponents = URLComponents(string: url.absoluteString),
