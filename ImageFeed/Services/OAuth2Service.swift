@@ -33,6 +33,7 @@ final class OAuth2Service {
         request.httpMethod = "POST"
         return request
     }
+    
     func fetchOAuthToken(
         withCode code: String,
         completion: @escaping (Result<String, Error>) -> Void
