@@ -18,6 +18,7 @@ final class ProfileImageService {
     
     private var task: URLSessionTask?
     private(set) var avatarURL: String?
+    static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
 
     //MARK: - Methods
     
@@ -59,10 +60,13 @@ final class ProfileImageService {
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
                     let profileUserResult = try decoder.decode(UserResult.self, from: data)
-                    let profileUserImageURL = profileUserResult.profileImage.small
-                    self.avatarURL = profileUserImageURL
-                    print(profileUserImageURL)
-                    completion(.success(profileUserImageURL))
+                    let profileImageURL = profileUserResult.profileImage.small
+                    self.avatarURL = profileImageURL
+                    completion(.success(profileImageURL))
+                    NotificationCenter.default.post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": profileImageURL])
                 } catch {
                     print("OAuth token decode error: \(error.localizedDescription)")
                     completion(.failure(error))
