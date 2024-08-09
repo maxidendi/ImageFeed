@@ -91,8 +91,8 @@
 			children = (
 				3F387A5C2C555573009FA802 /* OAuth2Service.swift */,
 				3FC17B272C65315C005DC458 /* ProfileService.swift */,
-				3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */,
 				3FC17B2C2C6624A5005DC458 /* ProfileImageService.swift */,
+				3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";

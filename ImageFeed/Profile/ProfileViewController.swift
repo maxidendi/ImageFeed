@@ -12,6 +12,7 @@ final class ProfileViewController: UIViewController {
     //MARK: - Properties
     
     private let profile = ProfileService.shared.profile
+    private var profileImageServiceObserver: NSObjectProtocol?
     private var logoutButton: UIButton?
     private var photoImageView: UIImageView?
     private var nameLabel: UILabel?
@@ -31,6 +32,15 @@ final class ProfileViewController: UIViewController {
         
         guard let profile else { return }
         updateProfileDetails(profile: profile)
+        
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
 
     //MARK: - Methods
@@ -126,6 +136,11 @@ final class ProfileViewController: UIViewController {
         nameLabel?.text = profile.name
         loginLabel?.text = profile.loginName
         descriptionLabel?.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+        guard let profileImageURL = ProfileImageService.shared.avatarURL,
+              let url = URL(string: profileImageURL) else { return }
     }
     
     @IBAction private func logoutButtonTapped(_ sender: Any) {
