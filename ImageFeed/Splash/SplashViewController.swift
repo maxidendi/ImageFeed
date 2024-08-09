@@ -9,7 +9,7 @@ import UIKit
 
 protocol AuthViewControllerDelegate: AnyObject {
     
-    func didAuthenticate(_ vc: AuthViewController)
+    func didAuthenticate(_ vc: AuthViewController, with token: String)
 }
 
 
@@ -18,6 +18,9 @@ final class SplashViewController: UIViewController {
     //MARK: - Properties
     
     private let showAuthFlowSegueIdentifier = "ShowAuthFlow"
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    private let storage = OAuth2TokenStorage.shared
     
     //MARK: - Methods of lifecircle
     
@@ -64,10 +67,26 @@ final class SplashViewController: UIViewController {
     }
     
     private func chooseTheFlowToContinue() {
-        if OAuth2TokenStorage.shared.token != nil {
-            switchToImagesListFlow()
+        if let token = storage.token {
+            fetchProfile(token)
         } else {
             performSegue(withIdentifier: showAuthFlowSegueIdentifier, sender: nil)
+        }
+    }
+    
+    private func fetchProfile(_ token: String) {
+        UIBlockingProgressHUD.show()
+        profileService.fetchProfile(token) {[weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self else { return }
+            switch result {
+            case .success(let profile):
+                self.switchToImagesListFlow()
+                self.profileImageService.fetchProfileImageURL(username: profile.username, token: token) { _ in }
+            case .failure(_):
+                //TODO: code to show the error
+                break
+            }
         }
     }
 }
@@ -76,7 +95,8 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     
-    func didAuthenticate(_ vc: AuthViewController) {
-        vc.dismiss(animated: true)
+    func didAuthenticate(_ vc: AuthViewController, with token: String) {
+        dismiss(animated: true)
+        fetchProfile(token)
     }
 }

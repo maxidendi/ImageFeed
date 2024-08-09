@@ -15,6 +15,11 @@ final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
     
+    //MARK: - Properties
+    
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
     //MARK: - Methods
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -27,6 +32,7 @@ final class OAuth2Service {
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
         guard let url = urlComponents?.url else {
+            assertionFailure("Failed to create URL")
             return nil
         }
         var request = URLRequest(url: url)
@@ -38,12 +44,19 @@ final class OAuth2Service {
         withCode code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
-        let request = makeOAuthTokenRequest(code: code)
-        guard let request else {
-            print("Invalid fetch token request")
+        assert(Thread.isMainThread)
+        guard code != lastCode else {
+            completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let task = URLSession.shared.data(for: request) { result in
+        task?.cancel()
+        lastCode = code
+        let request = makeOAuthTokenRequest(code: code)
+        guard let request else {
+            completion(.failure(NetworkErrors.invalidRequestError))
+            return
+        }
+        let task = URLSession.shared.data(for: request) {[weak self] result in
             switch result {
             case .success(let data):
                 do {
@@ -58,7 +71,10 @@ final class OAuth2Service {
             case .failure(let error):
                 completion(.failure(error))
             }
+            self?.task = nil
+            self?.lastCode = nil
         }
+        self.task = task
         task.resume()
     }
 }
