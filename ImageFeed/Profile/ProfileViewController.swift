@@ -10,7 +10,8 @@ import UIKit
 final class ProfileViewController: UIViewController {
     
     //MARK: - Properties
-
+    
+    private let profile = ProfileService.shared.profile
     private var logoutButton: UIButton?
     private var photoImageView: UIImageView?
     private var nameLabel: UILabel?
@@ -27,6 +28,9 @@ final class ProfileViewController: UIViewController {
         addNameLabel()
         addLoginLabel()
         addDescriptionLabel()
+        
+        guard let profile else { return }
+        updateProfileDetails(profile: profile)
     }
 
     //MARK: - Methods
@@ -116,6 +120,12 @@ final class ProfileViewController: UIViewController {
         }
         descriptionLabel.topAnchor.constraint(equalTo: login.bottomAnchor, constant: 8).isActive = true
         self.descriptionLabel = descriptionLabel
+    }
+    
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel?.text = profile.name
+        loginLabel?.text = profile.loginName
+        descriptionLabel?.text = profile.bio
     }
     
     @IBAction private func logoutButtonTapped(_ sender: Any) {

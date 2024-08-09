@@ -11,7 +11,8 @@ enum NetworkErrors: Error, LocalizedError {
     case httpsStatusCodeError(Int)
     case urlRequestError(Error)
     case urlSessionError
-    
+    case invalidRequestError
+
     var errorDescription: String? {
         switch self {
         case .httpsStatusCodeError(let code):
@@ -20,6 +21,8 @@ enum NetworkErrors: Error, LocalizedError {
             return "URLRequest Error: \(error.localizedDescription)"
         case .urlSessionError:
             return "URLSession Error"
+        case .invalidRequestError:
+            return "Invalid Request Error"
         }
     }
 }
