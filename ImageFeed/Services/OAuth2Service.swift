@@ -46,6 +46,7 @@ final class OAuth2Service {
     ) {
         assert(Thread.isMainThread)
         guard code != lastCode else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
@@ -53,27 +54,25 @@ final class OAuth2Service {
         lastCode = code
         let request = makeOAuthTokenRequest(code: code)
         guard let request else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let task = URLSession.shared.data(for: request) {[weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            guard let self else {
+                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                completion(.failure(NetworkErrors.invalidRequestError))
+                return
+            }
             switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    let token = response.accessToken
-                    completion(.success(token))
-                } catch {
-                    print("OAuth token decode error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
+            case .success(let response):
+                let token = response.accessToken
+                completion(.success(token))
             case .failure(let error):
                 completion(.failure(error))
             }
-            self?.task = nil
-            self?.lastCode = nil
+            self.task = nil
+            self.lastCode = nil
         }
         self.task = task
         task.resume()
