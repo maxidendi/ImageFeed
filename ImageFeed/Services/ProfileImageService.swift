@@ -22,7 +22,7 @@ final class ProfileImageService {
 
     //MARK: - Methods
     
-    private func makeURLRequest(token: String, username: String) -> URLRequest? {
+    private func makeProfileImageRequest(token: String, username: String) -> URLRequest? {
         guard let url = URL(string: "/users/\(username)", relativeTo: Constants.defaultBaseURL)
         else {
             assertionFailure("Failed to create URL")
@@ -41,36 +41,30 @@ final class ProfileImageService {
     ) {
         assert(Thread.isMainThread)
         guard task == nil else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let request = makeURLRequest(token: token, username: username)
+        let request = makeProfileImageRequest(token: token, username: username)
         guard let request else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let task = URLSession.shared.data(for: request) {[weak self] result in
+        let task = URLSession.shared.objectTask(for: request) {[weak self] (result: Result<UserResult, Error>) in
             guard let self else {
-                completion(.failure(NetworkErrors.urlSessionError))
+                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }
             switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let profileUserResult = try decoder.decode(UserResult.self, from: data)
-                    let profileImageURL = profileUserResult.profileImage.small
+            case .success(let profileUserResult):
+                    let profileImageURL = profileUserResult.profileImage.medium
                     self.avatarURL = profileImageURL
-                    completion(.success(profileImageURL))
                     NotificationCenter.default.post(
                         name: ProfileImageService.didChangeNotification,
-                        object: self,
-                        userInfo: ["URL": profileImageURL])
-                } catch {
-                    print("OAuth token decode error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
+                        object: self)
+                    completion(.success(profileImageURL))
             case .failure(let error):
                 completion(.failure(error))
             }

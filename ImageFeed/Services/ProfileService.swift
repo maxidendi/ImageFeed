@@ -21,7 +21,7 @@ final class ProfileService {
 
     //MARK: - Methods
     
-    private func makeURLRequest(token: String) -> URLRequest? {
+    private func makeProfileRequest(token: String) -> URLRequest? {
         guard let url = URL(string: "/me", relativeTo: Constants.defaultBaseURL)
         else {
             assertionFailure("Failed to create URL")
@@ -39,32 +39,27 @@ final class ProfileService {
     ) {
         assert(Thread.isMainThread)
         guard task == nil else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let request = makeURLRequest(token: token)
+        let request = makeProfileRequest(token: token)
         guard let request else {
+            NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let task = URLSession.shared.data(for: request) {[weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else {
-                completion(.failure(NetworkErrors.urlSessionError))
+                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }
             switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let profileResult = try decoder.decode(ProfileResult.self, from: data)
+            case .success(let profileResult):
                     let profile = Profile(profileResult: profileResult)
                     self.profile = profile
                     completion(.success(profile))
-                } catch {
-                    print("OAuth token decode error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
             case .failure(let error):
                 completion(.failure(error))
             }
