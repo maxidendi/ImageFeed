@@ -66,6 +66,8 @@ final class ProfileImageService {
                         object: self)
                     completion(.success(profileImageURL))
             case .failure(let error):
+                // Не совсем понимаю зачем добавлять здесь логирование,
+                // если оно уже есть в URLSession+data
                 completion(.failure(error))
             }
             self.task = nil
