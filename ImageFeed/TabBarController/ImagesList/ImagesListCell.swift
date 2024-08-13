@@ -21,11 +21,12 @@ final class ImagesListCell: UITableViewCell {
                                     UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
             layerGradient.frame = bottomGradient.bounds
             bottomGradient.layer.addSublayer(layerGradient)
-            print("set gradient")
         }
     }
     @IBOutlet private weak var dateLabel: UILabel!
     @IBOutlet private weak var likeButton: UIButton!
+    
+    //MARK: - Methods
     
     func configCell(dateFormatter: Formatter, with indexPath: IndexPath, cellImage: UIImage) {
         self.likeButton.imageView?.image = indexPath.row % 2 == 0 ?

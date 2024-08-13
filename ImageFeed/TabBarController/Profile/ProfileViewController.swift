@@ -142,13 +142,14 @@ final class ProfileViewController: UIViewController {
     private func updateAvatar() {
         guard let profileImageURL = ProfileImageService.shared.avatarURL,
               let url = URL(string: profileImageURL) else { return }
-        let processor =
-        RoundCornerImageProcessor(cornerRadius: 35) |> BlendImageProcessor(blendMode: .normal, backgroundColor: .ypBlack)
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+                    |> BlendImageProcessor(blendMode: .normal, backgroundColor: .ypBlack)
         photoImageView?.kf.indicatorType = .activity
         photoImageView?.kf.setImage(
             with: url,
             placeholder: UIImage(named: "user_avatar_placeholder"),
-            options: [.processor(processor)])
+            options: [.processor(processor)]
+        )
     }
     
     @IBAction private func logoutButtonTapped(_ sender: Any) {

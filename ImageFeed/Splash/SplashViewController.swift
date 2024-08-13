@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftKeychainWrapper
 
 protocol AuthViewControllerDelegate: AnyObject {
     
@@ -17,12 +18,17 @@ final class SplashViewController: UIViewController {
     
     //MARK: - Properties
     
-    private let showAuthFlowSegueIdentifier = "ShowAuthFlow"
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
-    private let storage = OAuth2TokenStorage.shared
+    private let storage = OAuth2KeychainTokenStorage.shared
     
     //MARK: - Methods of lifecircle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .ypBlack
+        addSplashScreenLogo()
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -40,18 +46,12 @@ final class SplashViewController: UIViewController {
         .lightContent
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showAuthFlowSegueIdentifier {
-            guard let navigationController = segue.destination as? UINavigationController,
-                  let vc = navigationController.viewControllers[0] as? AuthViewController
-            else {
-                assertionFailure("Failed to prepare for \(showAuthFlowSegueIdentifier)")
-                return
-            }
-            vc.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    private func addSplashScreenLogo() {
+        let screenLogo = UIImageView(image: UIImage(named: "vector"))
+        screenLogo.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(screenLogo)
+        screenLogo.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        screenLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
     private func switchToImagesListFlow() {
@@ -66,11 +66,27 @@ final class SplashViewController: UIViewController {
         window.rootViewController = rootController
     }
     
+    private func switchToAuthorizationFlow() {
+        guard
+            let authNavigationController = UIStoryboard(
+            name: "Main",
+            bundle: .main).instantiateViewController(identifier: "AuthNavigationController") as? UINavigationController,
+            let authViewController = authNavigationController.viewControllers[0] as? AuthViewController
+        else {
+            assertionFailure("Failed to present AuthViewController")
+            return
+        }
+        authViewController.delegate = self
+        authNavigationController.modalPresentationStyle = .fullScreen
+        authNavigationController.modalTransitionStyle = .flipHorizontal
+        self.present(authNavigationController, animated: true)
+    }
+    
     private func chooseTheFlowToContinue() {
         if let token = storage.token {
             fetchProfile(token)
         } else {
-            performSegue(withIdentifier: showAuthFlowSegueIdentifier, sender: nil)
+            switchToAuthorizationFlow()
         }
     }
     
@@ -97,6 +113,5 @@ extension SplashViewController: AuthViewControllerDelegate {
     
     func didAuthenticate(_ vc: AuthViewController, with token: String) {
         dismiss(animated: true)
-        fetchProfile(token)
     }
 }

@@ -9,6 +9,8 @@ import Foundation
 
 extension URLSession {
     
+    //MARK: - Methods
+    
     func objectTask<T: Decodable>(
         for request: URLRequest,
         completion: @escaping (Result<T, Error>) -> Void
@@ -25,6 +27,9 @@ extension URLSession {
                     print("""
                         -------------
                         Decode error: \(error.localizedDescription)
+                        File: \((#file as NSString).lastPathComponent)
+                        Function: \(#function)
+                        Line: \(#line)
                         Data: \(String(data: data, encoding: .utf8) ?? "")
                         -------------
                         """)
