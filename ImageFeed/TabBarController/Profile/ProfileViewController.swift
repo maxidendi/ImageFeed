@@ -6,11 +6,14 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     //MARK: - Properties
-
+    
+    private let profile = ProfileService.shared.profile
+    private var profileImageServiceObserver: NSObjectProtocol?
     private var logoutButton: UIButton?
     private var photoImageView: UIImageView?
     private var nameLabel: UILabel?
@@ -27,12 +30,24 @@ final class ProfileViewController: UIViewController {
         addNameLabel()
         addLoginLabel()
         addDescriptionLabel()
+        
+        guard let profile else { return }
+        updateProfileDetails(profile: profile)
+        
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
 
     //MARK: - Methods
     
     func addProfilePhoto() {
-        let photoImageView = UIImageView(image: UIImage(named: "user_photo"))
+        let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoImageView)
         photoImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
@@ -118,7 +133,26 @@ final class ProfileViewController: UIViewController {
         self.descriptionLabel = descriptionLabel
     }
     
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel?.text = profile.name
+        loginLabel?.text = profile.loginName
+        descriptionLabel?.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+        guard let profileImageURL = ProfileImageService.shared.avatarURL,
+              let url = URL(string: profileImageURL) else { return }
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+                    |> BlendImageProcessor(blendMode: .normal, backgroundColor: .ypBlack)
+        photoImageView?.kf.indicatorType = .activity
+        photoImageView?.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "user_avatar_placeholder"),
+            options: [.processor(processor)]
+        )
+    }
+    
     @IBAction private func logoutButtonTapped(_ sender: Any) {
-        //TODO: sprint 11
+        //TODO: some code
     }
 }

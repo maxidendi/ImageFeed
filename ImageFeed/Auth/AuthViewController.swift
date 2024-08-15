@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 protocol WebViewViewControllerDelegate: AnyObject {
     
@@ -65,22 +66,30 @@ extension AuthViewController: WebViewViewControllerDelegate {
         didAuthenticateWithCode code: String
     ) {        
         navigationController?.popToRootViewController(animated: true)
+        UIBlockingProgressHUD.show()
         OAuth2Service.shared.fetchOAuthToken(withCode: code) {[weak self] result in
             guard let self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success(let token):
-                OAuth2TokenStorage.shared.token = token
-                print("Actual token: \(token)")
-                self.delegate?.didAuthenticate(self)
+                OAuth2KeychainTokenStorage.shared.token = token
+                self.delegate?.didAuthenticate(self, with: token)
             case .failure(_):
-                //TODO: code to handle error
-                break
+                let alert = UIAlertController(
+                    title: "Что-то пошло не так(",
+                    message: "Не удалось войти в систему",
+                    preferredStyle: .alert)
+                let action = UIAlertAction(
+                    title: "OK",
+                    style: .default)
+                alert.addAction(action)
+                self.present(alert, animated: true)
             }
         }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        //TODO: sprint 11
+        //TODO: some code
     }
 
 }

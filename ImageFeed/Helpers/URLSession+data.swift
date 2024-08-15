@@ -7,24 +7,41 @@
 
 import Foundation
 
-enum NetworkErrors: Error, LocalizedError {
-    case httpsStatusCodeError(Int)
-    case urlRequestError(Error)
-    case urlSessionError
-    
-    var errorDescription: String? {
-        switch self {
-        case .httpsStatusCodeError(let code):
-            return "HTTPS Status Code Error: \(code)"
-        case .urlRequestError(let error):
-            return "URLRequest Error: \(error.localizedDescription)"
-        case .urlSessionError:
-            return "URLSession Error"
-        }
-    }
-}
-
 extension URLSession {
+    
+    //MARK: - Methods
+    
+    func objectTask<T: Decodable>(
+        for request: URLRequest,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) -> URLSessionTask {
+        let decoder = JSONDecoder()
+        let task = data(for: request) { (result: Result<Data, Error>) in
+            switch result {
+            case .success(let data):
+                do {
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let resultValue = try decoder.decode(T.self, from: data)
+                    completion(.success(resultValue))
+                } catch {
+                    print("""
+                        -------------
+                        Decode error: \(error.localizedDescription)
+                        File: \((#file as NSString).lastPathComponent)
+                        Function: \(#function)
+                        Line: \(#line)
+                        Data: \(String(data: data, encoding: .utf8) ?? "")
+                        -------------
+                        """)
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        return task
+    }
+    
     func data(
         for request: URLRequest,
         completion: @escaping (Result<Data, Error>) -> Void
@@ -40,20 +57,20 @@ extension URLSession {
                       let response,
                       let statusCode = (response as? HTTPURLResponse)?.statusCode
                 else {
-                    print(NetworkErrors.urlSessionError.localizedDescription)
+                    NetworkErrors.logError(.urlSessionError, file: (#file))
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.urlSessionError))
                 }
                 guard 200..<300 ~= statusCode
                 else {
-                    print(NetworkErrors.httpsStatusCodeError(statusCode).localizedDescription)
-                    print(String(data: data, encoding: .utf8) as Any)
+                    NetworkErrors.logError(.httpsStatusCodeError(statusCode), file: (#file))
+                    print("Data: \(String(data: data, encoding: .utf8) ?? "")")
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.httpsStatusCodeError(statusCode)))
                 }
                 return fulfillCompletionOnMainThread(.success(data))
             }
-            print(NetworkErrors.urlRequestError(error).localizedDescription)
+            NetworkErrors.logError(.urlRequestError(error), file: (#file))
             fulfillCompletionOnMainThread(.failure(NetworkErrors.urlRequestError(error)))
         }
         return task
