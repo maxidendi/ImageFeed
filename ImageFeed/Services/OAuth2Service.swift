@@ -44,7 +44,13 @@ final class OAuth2Service {
         withCode code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
-        assert(Thread.isMainThread)
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.fetchOAuthToken(withCode: code, completion: completion)
+            }
+            return
+        }
         guard code != lastCode else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))

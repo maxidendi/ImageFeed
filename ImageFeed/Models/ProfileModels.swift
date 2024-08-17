@@ -20,16 +20,16 @@ struct UserImage: Codable {
 struct ProfileResult: Codable {
     let username: String
     let firstName: String
-    let lastName: String
-    let bio: String
+    let lastName: String?
+    let bio: String?
 }
 
 struct Profile {
     let profileResult: ProfileResult
     var username: String { profileResult.username }
-    var name: String { profileResult.firstName + " " + profileResult.lastName }
+    var name: String { profileResult.firstName + " " + (profileResult.lastName ?? "") }
     var loginName: String { "@" + profileResult.username }
-    var bio: String { profileResult.bio }
+    var bio: String { profileResult.bio  ?? "" }
 }
 
 

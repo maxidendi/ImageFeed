@@ -34,10 +34,16 @@ final class ProfileService {
     }
     
     func fetchProfile(
-        _ token: String,
+        token: String,
         completion: @escaping (Result<Profile, Error>) -> Void
     ) {
-        assert(Thread.isMainThread)
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.fetchProfile(token: token, completion: completion)
+            }
+            return
+        }
         guard task == nil else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))

@@ -37,9 +37,15 @@ final class ProfileImageService {
     func fetchProfileImageURL(
         username: String,
         token: String,
-        _ completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<String, Error>) -> Void
     ) {
-        assert(Thread.isMainThread)
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.fetchProfileImageURL(username: username, token: token, completion: completion)
+            }
+            return
+        }
         guard task == nil else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
@@ -51,7 +57,7 @@ final class ProfileImageService {
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
-        let task = URLSession.shared.objectTask(for: request) {[weak self] (result: Result<UserResult, Error>) in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             guard let self else {
                 NetworkErrors.logError(.invalidRequestError, file: (#file))
                 completion(.failure(NetworkErrors.invalidRequestError))

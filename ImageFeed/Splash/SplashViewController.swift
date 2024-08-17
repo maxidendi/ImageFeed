@@ -27,6 +27,10 @@ final class SplashViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
+        
+        //TODO: Remove from final build
+        KeychainWrapper.standard.removeAllKeys()
+        
         addSplashScreenLogo()
     }
     
@@ -78,8 +82,8 @@ final class SplashViewController: UIViewController {
         }
         authViewController.delegate = self
         authNavigationController.modalPresentationStyle = .fullScreen
-        authNavigationController.modalTransitionStyle = .flipHorizontal
-        self.present(authNavigationController, animated: true)
+        authNavigationController.modalTransitionStyle = .crossDissolve
+        present(authNavigationController, animated: true)
     }
     
     private func chooseTheFlowToContinue() {
@@ -92,7 +96,7 @@ final class SplashViewController: UIViewController {
     
     private func fetchProfile(_ token: String) {
         UIBlockingProgressHUD.show()
-        profileService.fetchProfile(token) {[weak self] result in
+        profileService.fetchProfile(token: token) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             guard let self else { return }
             switch result {
