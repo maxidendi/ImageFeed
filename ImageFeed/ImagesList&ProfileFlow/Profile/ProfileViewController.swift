@@ -59,7 +59,7 @@ final class ProfileViewController: UIViewController {
     
     func addLogoutButton() {
         let logoutButton = UIButton.systemButton(
-            with: UIImage(named: "arrow_forward")!,
+            with: UIImage(named: "arrow_forward") ?? UIImage(),
             target: self,
             action: nil)
         logoutButton.tintColor = UIColor(red: 0.96, green: 0.42, blue: 0.42, alpha: 1.00)

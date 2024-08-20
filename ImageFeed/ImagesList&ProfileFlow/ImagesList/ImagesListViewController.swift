@@ -18,15 +18,19 @@ final class ImagesListViewController: UIViewController {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
-    @IBOutlet private var tableView: UITableView!
+    private var tableView: UITableView?
     
     //MARK: - Methods of lifecircle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.contentInset = UIEdgeInsets(
+        addTableView()
+        tableView?.dataSource = self
+        tableView?.delegate = self
+        tableView?.contentInset = UIEdgeInsets(
             top: 12,
             left: 0,
             bottom: 12,
@@ -49,13 +53,28 @@ final class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
+    
+    private func addTableView() {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.backgroundColor = .ypBlack
+        
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        self.tableView = tableView
+    }
 }
 
 //MARK: - Extensions
 
 extension ImagesListViewController: UITableViewDataSource {
-    
+        
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
         return photosName.count
     }
     

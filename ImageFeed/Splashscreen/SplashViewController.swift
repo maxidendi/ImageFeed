@@ -29,7 +29,7 @@ final class SplashViewController: UIViewController {
         view.backgroundColor = .ypBlack
         
         //TODO: Remove from final build
-        KeychainWrapper.standard.removeAllKeys()
+//        KeychainWrapper.standard.removeAllKeys()
         
         addSplashScreenLogo()
     }
@@ -65,9 +65,7 @@ final class SplashViewController: UIViewController {
             assertionFailure("Invalid window configuration")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-        let rootController = tabBarController.instantiateViewController(withIdentifier: "ImagesListAndProfile")
-        window.rootViewController = rootController
+        window.rootViewController = TabBarController()
     }
     
     private func switchToAuthorizationFlow() {
