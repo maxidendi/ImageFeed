@@ -14,6 +14,7 @@ final class ImagesListViewController: UIViewController {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map({"\($0)"})    
     private var imagesListCell: ImagesListCell?
+    static let didChangeNotification = Notification.Name("ImagesListProviderDidChange")
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -38,22 +39,7 @@ final class ImagesListViewController: UIViewController {
     }
     
     //MARK: - Methods
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showSingleImageSegueIdentifier {
-            guard let viewController = segue.destination as? SingleImageViewController,
-                  let indexPath = sender as? IndexPath 
-            else {
-                assertionFailure("Failed to prepare for \(showSingleImageSegueIdentifier)")
-                return
-            }
-            let image = UIImage(named: photosName[indexPath.row])
-            viewController.image = image
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
-    }
-    
+        
     private func addTableView() {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -63,7 +49,7 @@ final class ImagesListViewController: UIViewController {
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.backgroundColor = .ypBlack
-        
+        tableView.separatorStyle = .none
         tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
         self.tableView = tableView
     }
@@ -92,7 +78,12 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+        let singleImageViewController = SingleImageViewController()
+        singleImageViewController.isModalInPresentation = true
+        singleImageViewController.modalPresentationStyle = .fullScreen
+        singleImageViewController.modalTransitionStyle = .crossDissolve
+        singleImageViewController.image = UIImage(named: photosName[indexPath.row]) ?? UIImage()
+        present(singleImageViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

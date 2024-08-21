@@ -9,6 +9,8 @@ import UIKit
 
 final class ImagesListCell: UITableViewCell {
     
+    //MARK: - Init
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -17,8 +19,8 @@ final class ImagesListCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .ypBlack
         clipsToBounds = true
-        addImageOfCell()
-        addBottomGradien()
+        selectionStyle = .none
+        addImageOfCellAndBottomGradientView()
         addDateLadel()
         addLikeButton()
     }
@@ -34,11 +36,13 @@ final class ImagesListCell: UITableViewCell {
         imageOfCell.layer.cornerRadius = 16
         return imageOfCell
     } ()
+    
     private var bottomGradient: UIView = {
         let gradient = UIView()
         gradient.translatesAutoresizingMaskIntoConstraints = false
         return gradient
     } ()
+    
     private var dateLabel: UILabel = {
         let dateLabel = UILabel()
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,6 +50,7 @@ final class ImagesListCell: UITableViewCell {
         dateLabel.textColor = .ypWhite
         return dateLabel
     } ()
+    
     private var likeButton: UIButton = {
         let likeButton = UIButton()
         likeButton.setImage(UIImage(named: "active_like"), for: .normal)
@@ -61,20 +66,21 @@ final class ImagesListCell: UITableViewCell {
                                 UIImage(named: "no_active_like")
         dateLabel.text = dateFormatter.string(for: Date())
         imageOfCell.image = cellImage
-        selectionStyle = .none
+        if bottomGradient.layer.sublayers == nil {
+            addBottomGradienLayer()
+        }
     }
     
-    private func addImageOfCell() {
+    private func addImageOfCellAndBottomGradientView() {
         contentView.addSubview(imageOfCell)
+        imageOfCell.addSubview(bottomGradient)
         imageOfCell.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4).isActive = true
         imageOfCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
         imageOfCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         imageOfCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
-        layoutIfNeeded()
     }
     
-    private func addBottomGradien() {
-        imageOfCell.addSubview(bottomGradient)
+    private func addBottomGradienLayer() {
         bottomGradient.widthAnchor.constraint(equalTo: imageOfCell.widthAnchor).isActive = true
         bottomGradient.heightAnchor.constraint(equalToConstant: 30).isActive = true
         bottomGradient.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor).isActive = true
@@ -83,9 +89,9 @@ final class ImagesListCell: UITableViewCell {
         layoutIfNeeded()
         let layerGradient = CAGradientLayer()
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
-                                UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
+                                UIColor.ypBlack.withAlphaComponent(0.5).cgColor]
         layerGradient.frame = bottomGradient.bounds
-        bottomGradient.layer.insertSublayer(layerGradient, at: 0)
+        bottomGradient.layer.addSublayer(layerGradient)
     }
     
     private func addDateLadel() {
@@ -93,7 +99,6 @@ final class ImagesListCell: UITableViewCell {
         dateLabel.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor, constant: 8).isActive = true
         dateLabel.trailingAnchor.constraint(greaterThanOrEqualTo: imageOfCell.trailingAnchor, constant: -8).isActive = true
         dateLabel.bottomAnchor.constraint(equalTo: imageOfCell.bottomAnchor, constant: -8).isActive = true
-        layoutIfNeeded()
     }
     
     private func addLikeButton() {
@@ -102,6 +107,5 @@ final class ImagesListCell: UITableViewCell {
         likeButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         likeButton.topAnchor.constraint(equalTo: imageOfCell.topAnchor).isActive = true
         likeButton.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor).isActive = true
-        layoutIfNeeded()
     }
 }
