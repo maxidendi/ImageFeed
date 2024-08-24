@@ -55,10 +55,12 @@ final class SingleImageViewController: UIViewController {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         view.addSubview(scrollView)
-        scrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
     
     private func addImageView() {
@@ -75,10 +77,12 @@ final class SingleImageViewController: UIViewController {
         backButton.setImage(UIImage(named: "backward"), for: .normal)
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
-        backButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        backButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            backButton.widthAnchor.constraint(equalToConstant: 44),
+            backButton.heightAnchor.constraint(equalToConstant: 44),
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+        ])
         backButton.addTarget(self, action: #selector(didTapbackButton), for: .touchUpInside)
     }
     
@@ -91,10 +95,12 @@ final class SingleImageViewController: UIViewController {
         shareButton.setImage(UIImage(named: "share_button"), for: .normal)
         shareButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(shareButton)
-        shareButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        shareButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        shareButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
-        shareButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            shareButton.widthAnchor.constraint(equalToConstant: 50),
+            shareButton.heightAnchor.constraint(equalToConstant: 50),
+            shareButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            shareButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor)
+        ])
         shareButton.addTarget(self, action: #selector(didTapShareButton), for: .touchUpInside)
     }
     

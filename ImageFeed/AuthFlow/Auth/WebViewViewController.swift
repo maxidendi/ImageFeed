@@ -12,8 +12,8 @@ final class WebViewViewController: UIViewController {
     
     //MARK: - Properties
     
-    @IBOutlet private var webView: WKWebView!
-    @IBOutlet private var progressView: UIProgressView!
+    let webView = WKWebView()
+    let progressView = UIProgressView()
     private var estimatedProgressObservation: NSKeyValueObservation?
     weak var delegate: WebViewViewControllerDelegate?
     
@@ -21,12 +21,14 @@ final class WebViewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        webView.backgroundColor = .white
         webView.navigationDelegate = self
+        view.backgroundColor = .ypWhite
+        addWebView()
+        addProgressView()
         loadAuthView()
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
-             options: [],
+            options: [],
             changeHandler: { [weak self] _, _ in
                  guard let self else { return }
                  self.updateProgress()
@@ -34,6 +36,31 @@ final class WebViewViewController: UIViewController {
     }
     
     //MARK: - Methods
+    
+    private func addWebView() {
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.contentMode = .scaleToFill
+        webView.backgroundColor = .ypWhite
+        view.addSubview(webView)
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+    }
+    
+    private func addProgressView() {
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.progress = .zero
+        progressView.progressTintColor = .ypBlack
+        view.addSubview(progressView)
+        NSLayoutConstraint.activate([
+            progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            progressView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            progressView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+    }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent

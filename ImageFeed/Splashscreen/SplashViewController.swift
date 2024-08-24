@@ -27,10 +27,6 @@ final class SplashViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-        
-        //TODO: Remove from final build
-//        KeychainWrapper.standard.removeAllKeys()
-        
         addSplashScreenLogo()
     }
     
@@ -69,16 +65,10 @@ final class SplashViewController: UIViewController {
     }
     
     private func switchToAuthorizationFlow() {
-        guard
-            let authNavigationController = UIStoryboard(
-            name: "Main",
-            bundle: .main).instantiateViewController(identifier: "AuthNavigationController") as? UINavigationController,
-            let authViewController = authNavigationController.viewControllers[0] as? AuthViewController
-        else {
-            assertionFailure("Failed to present AuthViewController")
-            return
-        }
+        let authNavigationController = NavigationController()
+        let authViewController = AuthViewController()
         authViewController.delegate = self
+        authNavigationController.viewControllers.append(authViewController)
         authNavigationController.isModalInPresentation = true
         authNavigationController.modalPresentationStyle = .fullScreen
         authNavigationController.modalTransitionStyle = .crossDissolve

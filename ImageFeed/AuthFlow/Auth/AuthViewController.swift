@@ -22,29 +22,50 @@ final class AuthViewController: UIViewController {
     
     //MARK: - Properties
     
-    private let showWebViewSegueIdentifier = "ShowWebView"
     weak var delegate: AuthViewControllerDelegate?
     
     //MARK: - Methods of lifecircle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .ypBlack
+        addLogo()
+        addEnterButton()
         configureBackButton()
     }
     
     //MARK: - Methods
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showWebViewSegueIdentifier {
-            guard let vc = segue.destination as? WebViewViewController 
-            else {
-                assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
-                return
-            }
-            vc.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    private func addLogo() {
+        let logo = UIImageView(image: UIImage(named: "unsplash_logo"))
+        logo.contentMode = .scaleAspectFit
+        logo.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(logo)
+        NSLayoutConstraint.activate([
+            logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logo.widthAnchor.constraint(equalToConstant: 60),
+            logo.heightAnchor.constraint(equalToConstant: 60)
+        ])
+    }
+    
+    private func addEnterButton() {
+        let enterButton = UIButton(type: .custom)
+        enterButton.translatesAutoresizingMaskIntoConstraints = false
+        enterButton.setTitle("Войти", for: .normal)
+        enterButton.setTitleColor(.ypBlack, for: .normal)
+        enterButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+        enterButton.backgroundColor = .ypWhite
+        enterButton.layer.masksToBounds = true
+        enterButton.layer.cornerRadius = 16
+        enterButton.addTarget(self, action: #selector(didTapEnterButton), for: .touchUpInside)
+        view.addSubview(enterButton)
+        NSLayoutConstraint.activate([
+            enterButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            enterButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            enterButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -90),
+            enterButton.heightAnchor.constraint(equalToConstant: 48)
+        ])
     }
     
     private func configureBackButton() {
@@ -52,6 +73,13 @@ final class AuthViewController: UIViewController {
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor.ypBlack
+    }
+    
+    @objc private func didTapEnterButton() {
+        guard let nc = navigationController else { return }
+        let wv = WebViewViewController()
+        wv.delegate = self
+        nc.pushViewController(wv, animated: true)
     }
 }
 
@@ -94,6 +122,5 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         //TODO: some code
     }
-
 }
 

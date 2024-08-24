@@ -17,12 +17,12 @@ final class TabBarController: UITabBarController {
         tabBar.tintColor = .ypWhite
         tabBar.isTranslucent = false
         view.backgroundColor = .ypBlack
-        setTabBarViewControllers()
+        setTabBarControllers()
     }
     
     //MARK: - Methods
     
-    private func setTabBarViewControllers() {
+    private func setTabBarControllers() {
         let imagesListViewController = ImagesListViewController()
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",

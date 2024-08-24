@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import SwiftKeychainWrapper
 
 final class ProfileViewController: UIViewController {
     
@@ -50,10 +51,12 @@ final class ProfileViewController: UIViewController {
         let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoImageView)
-        photoImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        photoImageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
-        photoImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        photoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
+        NSLayoutConstraint.activate([
+            photoImageView.widthAnchor.constraint(equalToConstant: 70),
+            photoImageView.heightAnchor.constraint(equalToConstant: 70),
+            photoImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            photoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
+        ])
         self.photoImageView = photoImageView
     }
     
@@ -64,6 +67,7 @@ final class ProfileViewController: UIViewController {
             action: nil)
         logoutButton.tintColor = UIColor(red: 0.96, green: 0.42, blue: 0.42, alpha: 1.00)
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.addTarget(self, action: #selector(didTaplogoutButton), for: .touchUpInside)
         view.addSubview(logoutButton)
         logoutButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         logoutButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
@@ -142,8 +146,7 @@ final class ProfileViewController: UIViewController {
     private func updateAvatar() {
         guard let profileImageURL = ProfileImageService.shared.avatarURL,
               let url = URL(string: profileImageURL) else { return }
-        let processor = RoundCornerImageProcessor(cornerRadius: 35)
-                    |> BlendImageProcessor(blendMode: .normal, backgroundColor: .ypBlack)
+        let processor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: .ypBlack)
         photoImageView?.kf.indicatorType = .activity
         photoImageView?.kf.setImage(
             with: url,
@@ -152,7 +155,14 @@ final class ProfileViewController: UIViewController {
         )
     }
     
-    @IBAction private func logoutButtonTapped(_ sender: Any) {
-        //TODO: some code
+    @objc private func didTaplogoutButton() {
+        KeychainWrapper.standard.removeAllKeys()
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first
+         else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+        window.rootViewController = SplashViewController()
     }
 }

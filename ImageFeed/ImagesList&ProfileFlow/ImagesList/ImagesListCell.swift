@@ -74,18 +74,22 @@ final class ImagesListCell: UITableViewCell {
     private func addImageOfCellAndBottomGradientView() {
         contentView.addSubview(imageOfCell)
         imageOfCell.addSubview(bottomGradient)
-        imageOfCell.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4).isActive = true
-        imageOfCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
-        imageOfCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
-        imageOfCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+        NSLayoutConstraint.activate([
+            imageOfCell.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            imageOfCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            imageOfCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            imageOfCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
     }
     
     private func addBottomGradienLayer() {
-        bottomGradient.widthAnchor.constraint(equalTo: imageOfCell.widthAnchor).isActive = true
-        bottomGradient.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        bottomGradient.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor).isActive = true
-        bottomGradient.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor).isActive = true
-        bottomGradient.bottomAnchor.constraint(equalTo: imageOfCell.bottomAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            bottomGradient.widthAnchor.constraint(equalTo: imageOfCell.widthAnchor),
+            bottomGradient.heightAnchor.constraint(equalToConstant: 30),
+            bottomGradient.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor),
+            bottomGradient.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor),
+            bottomGradient.bottomAnchor.constraint(equalTo: imageOfCell.bottomAnchor)
+        ])
         layoutIfNeeded()
         let layerGradient = CAGradientLayer()
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
@@ -96,16 +100,20 @@ final class ImagesListCell: UITableViewCell {
     
     private func addDateLadel() {
         imageOfCell.addSubview(dateLabel)
-        dateLabel.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor, constant: 8).isActive = true
-        dateLabel.trailingAnchor.constraint(greaterThanOrEqualTo: imageOfCell.trailingAnchor, constant: -8).isActive = true
-        dateLabel.bottomAnchor.constraint(equalTo: imageOfCell.bottomAnchor, constant: -8).isActive = true
+        NSLayoutConstraint.activate([
+            dateLabel.leadingAnchor.constraint(equalTo: imageOfCell.leadingAnchor, constant: 8),
+            dateLabel.trailingAnchor.constraint(greaterThanOrEqualTo: imageOfCell.trailingAnchor, constant: -8),
+            dateLabel.bottomAnchor.constraint(equalTo: imageOfCell.bottomAnchor, constant: -8)
+        ])
     }
     
     private func addLikeButton() {
         imageOfCell.addSubview(likeButton)
-        likeButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        likeButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        likeButton.topAnchor.constraint(equalTo: imageOfCell.topAnchor).isActive = true
-        likeButton.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            likeButton.widthAnchor.constraint(equalToConstant: 44),
+            likeButton.heightAnchor.constraint(equalToConstant: 44),
+            likeButton.topAnchor.constraint(equalTo: imageOfCell.topAnchor),
+            likeButton.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor)
+        ])
     }
 }
