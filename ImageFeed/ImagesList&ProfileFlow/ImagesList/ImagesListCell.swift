@@ -53,8 +53,8 @@ final class ImagesListCell: UITableViewCell {
     
     private var likeButton: UIButton = {
         let likeButton = UIButton()
-        likeButton.setImage(UIImage(named: "active_like"), for: .normal)
         likeButton.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.setImage(UIImage(named: "active_like"), for: .normal)
         return likeButton
     } ()
     
@@ -71,17 +71,6 @@ final class ImagesListCell: UITableViewCell {
         }
     }
     
-    private func addImageOfCellAndBottomGradientView() {
-        contentView.addSubview(imageOfCell)
-        imageOfCell.addSubview(bottomGradient)
-        NSLayoutConstraint.activate([
-            imageOfCell.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            imageOfCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
-            imageOfCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            imageOfCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
-        ])
-    }
-    
     private func addBottomGradienLayer() {
         NSLayoutConstraint.activate([
             bottomGradient.widthAnchor.constraint(equalTo: imageOfCell.widthAnchor),
@@ -96,6 +85,17 @@ final class ImagesListCell: UITableViewCell {
                                 UIColor.ypBlack.withAlphaComponent(0.5).cgColor]
         layerGradient.frame = bottomGradient.bounds
         bottomGradient.layer.addSublayer(layerGradient)
+    }
+    
+    private func addImageOfCellAndBottomGradientView() {
+        contentView.addSubview(imageOfCell)
+        imageOfCell.addSubview(bottomGradient)
+        NSLayoutConstraint.activate([
+            imageOfCell.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            imageOfCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            imageOfCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            imageOfCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
     }
     
     private func addDateLadel() {

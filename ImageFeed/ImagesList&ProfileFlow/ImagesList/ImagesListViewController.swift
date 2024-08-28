@@ -10,11 +10,22 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     
     //MARK: - Properties
-    
-    private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let photosName: [String] = Array(0..<20).map({"\($0)"})    
-    private var imagesListCell: ImagesListCell?
+
+    private let photosName: [String] = Array(0..<20).map({"\($0)"})
+        
     static let didChangeNotification = Notification.Name("ImagesListProviderDidChange")
+        
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = .ypBlack
+        tableView.separatorStyle = .none
+        tableView.register(
+            ImagesListCell.self,
+            forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        return tableView
+    } ()
+
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -22,16 +33,15 @@ final class ImagesListViewController: UIViewController {
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
-    private var tableView: UITableView?
     
     //MARK: - Methods of lifecircle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         addTableView()
-        tableView?.dataSource = self
-        tableView?.delegate = self
-        tableView?.contentInset = UIEdgeInsets(
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.contentInset = UIEdgeInsets(
             top: 12,
             left: 0,
             bottom: 12,
@@ -41,13 +51,6 @@ final class ImagesListViewController: UIViewController {
     //MARK: - Methods
         
     private func addTableView() {
-        let tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .ypBlack
-        tableView.separatorStyle = .none
-        tableView.register(
-            ImagesListCell.self,
-            forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
         view.addSubview(tableView)
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -55,7 +58,6 @@ final class ImagesListViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-        self.tableView = tableView
     }
 }
 
@@ -64,7 +66,6 @@ final class ImagesListViewController: UIViewController {
 extension ImagesListViewController: UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
         return photosName.count
     }
     
@@ -81,14 +82,11 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController: UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let singleImageViewController = SingleImageViewController()
-        singleImageViewController.isModalInPresentation = true
+        let singleImageViewController = SingleImageViewController(
+            image: UIImage(named: photosName[indexPath.row]) ?? UIImage())
         singleImageViewController.modalPresentationStyle = .fullScreen
         singleImageViewController.modalTransitionStyle = .crossDissolve
-        singleImageViewController.image = UIImage(named: photosName[indexPath.row]) ?? UIImage()
         present(singleImageViewController, animated: true)
     }
     

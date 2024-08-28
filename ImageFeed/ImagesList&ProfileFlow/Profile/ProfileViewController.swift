@@ -14,12 +14,51 @@ final class ProfileViewController: UIViewController {
     //MARK: - Properties
     
     private let profile = ProfileService.shared.profile
+    
     private var profileImageServiceObserver: NSObjectProtocol?
-    private var logoutButton: UIButton?
-    private var photoImageView: UIImageView?
-    private var nameLabel: UILabel?
-    private var loginLabel: UILabel?
-    private var descriptionLabel: UILabel?
+    
+    private lazy var photoImageView: UIImageView = {
+        let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
+        photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        return photoImageView
+    } ()
+
+    private lazy var logoutButton: UIButton = {
+        let logoutButton = UIButton.systemButton(
+            with: UIImage(named: "arrow_forward") ?? UIImage(),
+            target: self,
+            action: #selector(didTaplogoutButton))
+        logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.tintColor = .ypRed
+        return logoutButton
+    } ()
+
+    private lazy var nameLabel: UILabel = {
+        let nameLabel = UILabel()
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
+        nameLabel.textColor = .white
+        nameLabel.text = "Екатерина Новикова"
+        return nameLabel
+    } ()
+    
+    private lazy var loginLabel: UILabel = {
+        let loginLabel = UILabel()
+        loginLabel.translatesAutoresizingMaskIntoConstraints = false
+        loginLabel.font = UIFont.systemFont(ofSize: 13)
+        loginLabel.textColor = .ypGray
+        loginLabel.text = "@ekaterina_nov"
+        return loginLabel
+    } ()
+    
+    private var descriptionLabel: UILabel = {
+        let descriptionLabel = UILabel()
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.font = UIFont.systemFont(ofSize: 13)
+        descriptionLabel.textColor = .white
+        descriptionLabel.text = "Hello, world!"
+        return descriptionLabel
+    } ()
         
     //MARK: - Methods of lifecircle
     
@@ -47,9 +86,7 @@ final class ProfileViewController: UIViewController {
 
     //MARK: - Methods
     
-    func addProfilePhoto() {
-        let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
-        photoImageView.translatesAutoresizingMaskIntoConstraints = false
+    private func addProfilePhoto() {
         view.addSubview(photoImageView)
         NSLayoutConstraint.activate([
             photoImageView.widthAnchor.constraint(equalToConstant: 70),
@@ -57,98 +94,59 @@ final class ProfileViewController: UIViewController {
             photoImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             photoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
         ])
-        self.photoImageView = photoImageView
     }
     
-    func addLogoutButton() {
-        let logoutButton = UIButton.systemButton(
-            with: UIImage(named: "arrow_forward") ?? UIImage(),
-            target: self,
-            action: nil)
-        logoutButton.tintColor = UIColor(red: 0.96, green: 0.42, blue: 0.42, alpha: 1.00)
-        logoutButton.translatesAutoresizingMaskIntoConstraints = false
-        logoutButton.addTarget(self, action: #selector(didTaplogoutButton), for: .touchUpInside)
+    private func addLogoutButton() {
         view.addSubview(logoutButton)
-        logoutButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        logoutButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -6).isActive = true
-        guard let photo = self.photoImageView else {
-            logoutButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 45).isActive = true
-            self.logoutButton = logoutButton
-            return
-        }
-        logoutButton.centerYAnchor.constraint(equalTo: photo.centerYAnchor).isActive = true
-        self.logoutButton = logoutButton
+        NSLayoutConstraint.activate([
+            logoutButton.widthAnchor.constraint(equalToConstant: 44),
+            logoutButton.heightAnchor.constraint(equalToConstant: 44),
+            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -6),
+            logoutButton.centerYAnchor.constraint(equalTo: photoImageView.centerYAnchor)
+        ])
     }
     
-    func addNameLabel() {
-        let nameLabel = UILabel()
-        nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
-        nameLabel.textColor = .white
-        nameLabel.text = "Екатерина Новикова"
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+    private func addNameLabel() {
         view.addSubview(nameLabel)
-        nameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        guard let photo = self.photoImageView else {
-            nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 110).isActive = true
-            self.nameLabel = nameLabel
-            return
-        }
-        nameLabel.firstBaselineAnchor.constraint(equalTo: photo.bottomAnchor, constant: 26).isActive = true
-        self.nameLabel = nameLabel
+        NSLayoutConstraint.activate([
+            nameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            nameLabel.firstBaselineAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 26)
+        ])
     }
     
-    func addLoginLabel() {
-        let loginLabel = UILabel()
-        loginLabel.font = UIFont.systemFont(ofSize: 13)
-        loginLabel.textColor = UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.00)
-        loginLabel.text = "@ekaterina_nov"
-        loginLabel.translatesAutoresizingMaskIntoConstraints = false
+    private func addLoginLabel() {
         view.addSubview(loginLabel)
-        loginLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        loginLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        loginLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        guard let name = self.nameLabel else {
-            loginLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 136).isActive = true
-            self.loginLabel = loginLabel
-            return
-        }
-        loginLabel.topAnchor.constraint(equalTo: name.lastBaselineAnchor, constant: 8).isActive = true
-        self.loginLabel = loginLabel
+        NSLayoutConstraint.activate([
+            loginLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            loginLabel.heightAnchor.constraint(equalToConstant: 18),
+            loginLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            loginLabel.topAnchor.constraint(equalTo: nameLabel.lastBaselineAnchor, constant: 8)
+        ])
     }
     
-    func addDescriptionLabel() {
-        let descriptionLabel = UILabel()
-        descriptionLabel.font = UIFont.systemFont(ofSize: 13)
-        descriptionLabel.textColor = .white
-        descriptionLabel.text = "Hello, world!"
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+    private func addDescriptionLabel() {
         view.addSubview(descriptionLabel)
-        descriptionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        descriptionLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        descriptionLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        guard let login = self.loginLabel else {
-            descriptionLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 162).isActive = true
-            self.descriptionLabel = descriptionLabel
-            return
-        }
-        descriptionLabel.topAnchor.constraint(equalTo: login.bottomAnchor, constant: 8).isActive = true
-        self.descriptionLabel = descriptionLabel
+        NSLayoutConstraint.activate([
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 18),
+            descriptionLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            descriptionLabel.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 8)
+        ])
     }
     
     private func updateProfileDetails(profile: Profile) {
-        nameLabel?.text = profile.name
-        loginLabel?.text = profile.loginName
-        descriptionLabel?.text = profile.bio
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
     
     private func updateAvatar() {
         guard let profileImageURL = ProfileImageService.shared.avatarURL,
               let url = URL(string: profileImageURL) else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: .ypBlack)
-        photoImageView?.kf.indicatorType = .activity
-        photoImageView?.kf.setImage(
+        photoImageView.kf.indicatorType = .activity
+        photoImageView.kf.setImage(
             with: url,
             placeholder: UIImage(named: "user_avatar_placeholder"),
             options: [.processor(processor)]

@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class TabBarController: UITabBarController {
+final class ImagesTabBarController: UITabBarController {
     
     //MARK: - Methods of lifecircle
     

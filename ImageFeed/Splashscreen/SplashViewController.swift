@@ -19,8 +19,16 @@ final class SplashViewController: UIViewController {
     //MARK: - Properties
     
     private let profileService = ProfileService.shared
+    
     private let profileImageService = ProfileImageService.shared
+    
     private let storage = OAuth2KeychainTokenStorage.shared
+    
+    private lazy var splashLogo: UIImageView = {
+        let splashLogo = UIImageView(image: UIImage(named: "vector"))
+        splashLogo.translatesAutoresizingMaskIntoConstraints = false
+        return splashLogo
+    } ()
     
     //MARK: - Methods of lifecircle
     
@@ -47,11 +55,11 @@ final class SplashViewController: UIViewController {
     }
     
     private func addSplashScreenLogo() {
-        let screenLogo = UIImageView(image: UIImage(named: "vector"))
-        screenLogo.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(screenLogo)
-        screenLogo.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        screenLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        view.addSubview(splashLogo)
+        NSLayoutConstraint.activate([
+            splashLogo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            splashLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
     }
     
     private func switchToImagesListFlow() {
@@ -61,17 +69,16 @@ final class SplashViewController: UIViewController {
             assertionFailure("Invalid window configuration")
             return
         }
-        window.rootViewController = TabBarController()
+        window.rootViewController = ImagesTabBarController()
     }
     
     private func switchToAuthorizationFlow() {
-        let authNavigationController = NavigationController()
         let authViewController = AuthViewController()
         authViewController.delegate = self
-        authNavigationController.viewControllers.append(authViewController)
-        authNavigationController.isModalInPresentation = true
+        let authNavigationController = UINavigationController(
+            rootViewController: authViewController)
         authNavigationController.modalPresentationStyle = .fullScreen
-        authNavigationController.modalTransitionStyle = .crossDissolve
+        authNavigationController.modalTransitionStyle = .coverVertical
         present(authNavigationController, animated: true)
     }
     
@@ -91,10 +98,22 @@ final class SplashViewController: UIViewController {
             switch result {
             case .success(let profile):
                 self.switchToImagesListFlow()
-                self.profileImageService.fetchProfileImageURL(username: profile.username, token: token) { _ in }
+                self.profileImageService.fetchProfileImageURL(
+                    username: profile.username,
+                    token: token) { _ in
+                    //TODO: handle the failure while fetch user avatar URL (if needed)
+                    }
             case .failure(_):
-                //TODO: code to show the error
-                break
+                let alert = UIAlertController(
+                    title: "Что-то пошло не так(",
+                    message: "Не удалось войти в систему",
+                    preferredStyle: .alert)
+                let action = UIAlertAction(
+                    title: "OK",
+                    style: .default,
+                    handler: { [weak self] _ in self?.chooseTheFlowToContinue()})
+                alert.addAction(action)
+                self.present(alert, animated: true)
             }
         }
     }

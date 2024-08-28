@@ -24,6 +24,26 @@ final class AuthViewController: UIViewController {
     
     weak var delegate: AuthViewControllerDelegate?
     
+    private lazy var logo: UIImageView = {
+        let logo = UIImageView(image: UIImage(named: "unsplash_logo"))
+        logo.contentMode = .scaleAspectFit
+        logo.translatesAutoresizingMaskIntoConstraints = false
+        return logo
+    } ()
+    
+    private lazy var enterButton: UIButton = {
+        let enterButton = UIButton(type: .custom)
+        enterButton.translatesAutoresizingMaskIntoConstraints = false
+        enterButton.setTitle("Войти", for: .normal)
+        enterButton.setTitleColor(.ypBlack, for: .normal)
+        enterButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+        enterButton.backgroundColor = .ypWhite
+        enterButton.layer.masksToBounds = true
+        enterButton.layer.cornerRadius = 16
+        enterButton.addTarget(self, action: #selector(didTapEnterButton), for: .touchUpInside)
+        return enterButton
+    } ()
+    
     //MARK: - Methods of lifecircle
     
     override func viewDidLoad() {
@@ -37,9 +57,6 @@ final class AuthViewController: UIViewController {
     //MARK: - Methods
     
     private func addLogo() {
-        let logo = UIImageView(image: UIImage(named: "unsplash_logo"))
-        logo.contentMode = .scaleAspectFit
-        logo.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logo)
         NSLayoutConstraint.activate([
             logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -50,15 +67,6 @@ final class AuthViewController: UIViewController {
     }
     
     private func addEnterButton() {
-        let enterButton = UIButton(type: .custom)
-        enterButton.translatesAutoresizingMaskIntoConstraints = false
-        enterButton.setTitle("Войти", for: .normal)
-        enterButton.setTitleColor(.ypBlack, for: .normal)
-        enterButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
-        enterButton.backgroundColor = .ypWhite
-        enterButton.layer.masksToBounds = true
-        enterButton.layer.cornerRadius = 16
-        enterButton.addTarget(self, action: #selector(didTapEnterButton), for: .touchUpInside)
         view.addSubview(enterButton)
         NSLayoutConstraint.activate([
             enterButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -68,18 +76,18 @@ final class AuthViewController: UIViewController {
         ])
     }
     
-    private func configureBackButton() {
-        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor.ypBlack
-    }
-    
     @objc private func didTapEnterButton() {
         guard let nc = navigationController else { return }
         let wv = WebViewViewController()
         wv.delegate = self
         nc.pushViewController(wv, animated: true)
+    }
+    
+    private func configureBackButton() {
+        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
+        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = UIColor.ypBlack
     }
 }
 
@@ -95,7 +103,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     ) {        
         navigationController?.popToRootViewController(animated: true)
         UIBlockingProgressHUD.show()
-        
         DispatchQueue.global().async {
             OAuth2Service.shared.fetchOAuthToken(withCode: code) { [weak self] result in
                 UIBlockingProgressHUD.dismiss()

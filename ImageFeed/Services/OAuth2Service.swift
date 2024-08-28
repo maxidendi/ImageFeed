@@ -75,8 +75,6 @@ final class OAuth2Service {
                 let token = response.accessToken
                 completion(.success(token))
             case .failure(let error):
-                // Не совсем понимаю зачем добавлять здесь логирование,
-                // если оно уже есть в URLSession+data
                 completion(.failure(error))
             }
             self.task = nil

@@ -12,10 +12,25 @@ final class WebViewViewController: UIViewController {
     
     //MARK: - Properties
     
-    let webView = WKWebView()
-    let progressView = UIProgressView()
-    private var estimatedProgressObservation: NSKeyValueObservation?
     weak var delegate: WebViewViewControllerDelegate?
+    
+    private var estimatedProgressObservation: NSKeyValueObservation?
+
+    private lazy var webView: WKWebView = {
+        let webView = WKWebView()
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.contentMode = .scaleToFill
+        webView.backgroundColor = .ypWhite
+        return webView
+    } ()
+    
+    private lazy var progressView: UIProgressView = {
+        let progressView = UIProgressView()
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.progress = .zero
+        progressView.progressTintColor = .ypBlack
+        return progressView
+    } ()
     
     //MARK: - Methods of lifecircle
     
@@ -38,9 +53,6 @@ final class WebViewViewController: UIViewController {
     //MARK: - Methods
     
     private func addWebView() {
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.contentMode = .scaleToFill
-        webView.backgroundColor = .ypWhite
         view.addSubview(webView)
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -51,9 +63,6 @@ final class WebViewViewController: UIViewController {
     }
     
     private func addProgressView() {
-        progressView.translatesAutoresizingMaskIntoConstraints = false
-        progressView.progress = .zero
-        progressView.progressTintColor = .ypBlack
         view.addSubview(progressView)
         NSLayoutConstraint.activate([
             progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -80,23 +89,6 @@ final class WebViewViewController: UIViewController {
         guard let url = urlComponents.url else { return }
         let request = URLRequest(url: url)
         webView.load(request)
-    }
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        if keyPath == #keyPath(WKWebView.estimatedProgress) {
-            updateProgress()
-        } else {
-            super.observeValue(
-                forKeyPath: keyPath,
-                of: object,
-                change: change,
-                context: context)
-        }
     }
     
     private func updateProgress() {
