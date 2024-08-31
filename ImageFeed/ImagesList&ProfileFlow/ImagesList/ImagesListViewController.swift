@@ -10,11 +10,15 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     
     //MARK: - Properties
-
+    
+    private var photos: [Photo] = []
+    
     private let photosName: [String] = Array(0..<20).map({"\($0)"})
-        
-    static let didChangeNotification = Notification.Name("ImagesListProviderDidChange")
-        
+    
+    private let imagesListService = ImagesListService.shared
+    
+    private var imagesListObserver: NSObjectProtocol?
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -26,19 +30,25 @@ final class ImagesListViewController: UIViewController {
         return tableView
     } ()
 
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "ru_RU")
-        return formatter
-    }()
+//    private lazy var dateFormatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .long
+//        formatter.timeStyle = .none
+//        formatter.locale = Locale(identifier: "ru_RU")
+//        return formatter
+//    }()
     
     //MARK: - Methods of lifecircle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         addTableView()
+        imagesListObserver = NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                self?.updateTableViewAnimated()
+            }
         tableView.dataSource = self
         tableView.delegate = self
         tableView.contentInset = UIEdgeInsets(
@@ -59,6 +69,20 @@ final class ImagesListViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+    private func updateTableViewAnimated() {
+        let oldPhotosCount = photos.count
+        let newPhotosCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldPhotosCount != newPhotosCount {
+            tableView.performBatchUpdates {
+                let indexPaths = (oldPhotosCount..<newPhotosCount).map { i in
+                    IndexPath(row: i, section: 0)
+                    }
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            }
+        }
+    }
 }
 
 //MARK: - Extensions
@@ -66,7 +90,7 @@ final class ImagesListViewController: UIViewController {
 extension ImagesListViewController: UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -74,13 +98,26 @@ extension ImagesListViewController: UITableViewDataSource {
             withIdentifier: ImagesListCell.reuseIdentifier,
             for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
-        let image = UIImage(named: photosName[indexPath.row]) ?? UIImage()
-        imageListCell.configCell(dateFormatter: dateFormatter, with: indexPath, cellImage: image)
+        imageListCell.configCell(
+            at: indexPath,
+            with: photos[indexPath.row]) { [weak self] in
+                self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
         return imageListCell
     }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
+    
+    func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        if indexPath.row + 1 == photos.count {
+            imagesListService.fetchPhotosNextPage()
+        }
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let singleImageViewController = SingleImageViewController(
@@ -91,7 +128,7 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else { return .zero }
+        let image = photos[indexPath.row]
         let imageInsets = UIEdgeInsets(top: 4,
                                        left: 16,
                                        bottom: 4,

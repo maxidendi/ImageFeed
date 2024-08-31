@@ -6,32 +6,35 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 final class ImagesListService {
     
     //MARK: - Singletone
 
     static let shared = ImagesListService()
+    
     private init() {}
     
     //MARK: - Properties
     
     private var lastLoadedPage: Int = .zero
+    
     private(set) var photos: [Photo] = []
+    
     private var task: URLSessionTask?
+    
+    private let keyChainStorage = OAuth2KeychainTokenStorage.shared
+    
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
     //MARK: - Methods
     
     private func makePhotosNextPageRequest(token: String, page: Int) -> URLRequest? {
-        guard let urlString = Constants.defaultBaseURL?.absoluteString,
-              var urlComponents = URLComponents(string: urlString + "/photos")
-        else {
-            assertionFailure("Failed to create URL")
-            return nil
-        }
-        urlComponents.queryItems = [URLQueryItem(name: "page", value: "\(page)")]
-        guard var url = urlComponents.url
+        var urlComponents = URLComponents(
+            string: Constants.defaultBaseURLString + "/photos")
+        urlComponents?.queryItems = [URLQueryItem(name: "page", value: "\(page)")]
+        guard let url = urlComponents?.url
         else {
             assertionFailure("Failed to create URL")
             return nil
@@ -42,50 +45,44 @@ final class ImagesListService {
         return request
     }
     
-    func fetchPhotosNextPage(
-        token: String,
-        completion: @escaping (Result<[Photo], Error>) -> Void
-    ) {
-        lastLoadedPage += 1
-        guard Thread.isMainThread else {
+    func fetchPhotosNextPage() {
+        let page = lastLoadedPage + 1
+
+        guard Thread.isMainThread 
+        else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchPhotosNextPage(token: token, completion: completion)
+                self.fetchPhotosNextPage()
             }
             return
         }
-        guard task == nil else {
+        guard task == nil,
+              let token = keyChainStorage.token,
+              let request = makePhotosNextPageRequest(token: token, page: page) 
+        else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
-            return
-        }
-        let request = makePhotosNextPageRequest(token: token, page: lastLoadedPage)
-        guard let request else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
-            guard let self else {
+            guard let self 
+            else {
                 NetworkErrors.logError(.invalidRequestError, file: (#file))
-                completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }
             switch result {
             case .success(let photoResult):
+                lastLoadedPage = page
                 let photos = photoResult.map{ Photo(photoResult: $0) }
                 self.photos.append(contentsOf: photos)
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self)
-                completion(.success(photos))
             case .failure(let error):
-                completion(.failure(error))
+                print(error.localizedDescription)
             }
             self.task = nil
         }
         self.task = task
         task.resume()
-
     }
 }

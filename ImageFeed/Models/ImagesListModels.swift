@@ -5,7 +5,7 @@
 //  Created by Денис Максимов on 29.08.2024.
 //
 
-import Foundation
+import UIKit
 
 struct PhotoResult: Codable {
     let id: String
@@ -29,9 +29,10 @@ struct Photo {
     let photoResult: PhotoResult
     var id: String { photoResult.id }
     var size: CGSize { CGSize(width: photoResult.width, height: photoResult.height) }
-    var createdAt: Date? { DateFormatter().date(from: photoResult.createdAt) }
+    var createdAt: Date? { Constants.dateFormatter.date(from: photoResult.createdAt) }
     var welcomeDescription: String? { photoResult.description }
     var thumbImageURL: String { photoResult.urls.thumb }
+    var smallImageURL: String { photoResult.urls.small }
     var largeImageURL: String { photoResult.urls.raw }
     var isLiked: Bool { photoResult.likedByUser }
 }

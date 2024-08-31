@@ -13,11 +13,13 @@ final class OAuth2KeychainTokenStorage {
     //MARK: - Singletone
     
     static let shared = OAuth2KeychainTokenStorage()
+    
     private init() {}
     
     //MARK: - Properties
 
     private let storage = KeychainWrapper.standard
+    
     private enum StorageKeys: String {
         case token
     }
@@ -27,11 +29,9 @@ final class OAuth2KeychainTokenStorage {
             storage.string(forKey: StorageKeys.token.rawValue)
         }
         set {
-            guard let newValue else {
-                assertionFailure("Invalid token value")
-                return
+            if let newValue {
+                storage.set(newValue, forKey: StorageKeys.token.rawValue)
             }
-            storage.set(newValue, forKey: StorageKeys.token.rawValue)
         }
     }
 }

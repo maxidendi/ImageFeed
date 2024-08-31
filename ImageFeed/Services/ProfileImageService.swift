@@ -12,18 +12,21 @@ final class ProfileImageService {
     //MARK: - Singletone
 
     static let shared = ProfileImageService()
+    
     private init() {}
 
     //MARK: - Properties
     
     private var task: URLSessionTask?
+    
     private(set) var avatarURL: String?
+    
     static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
 
     //MARK: - Methods
     
     private func makeProfileImageRequest(token: String, username: String) -> URLRequest? {
-        guard let url = URL(string: "/users/\(username)", relativeTo: Constants.defaultBaseURL)
+        guard let url = URL(string: Constants.defaultBaseURLString + "/users/\(username)")
         else {
             assertionFailure("Failed to create URL")
             return nil
@@ -46,13 +49,9 @@ final class ProfileImageService {
             }
             return
         }
-        guard task == nil else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
-            return
-        }
-        let request = makeProfileImageRequest(token: token, username: username)
-        guard let request else {
+        guard task == nil,
+              let request = makeProfileImageRequest(token: token, username: username)
+        else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return

@@ -27,7 +27,7 @@ final class ProfileViewController: UIViewController {
         let logoutButton = UIButton.systemButton(
             with: UIImage(named: "arrow_forward") ?? UIImage(),
             target: self,
-            action: #selector(didTaplogoutButton))
+            action: #selector(didTapLogoutButton))
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         logoutButton.tintColor = .ypRed
         return logoutButton
@@ -153,7 +153,7 @@ final class ProfileViewController: UIViewController {
         )
     }
     
-    @objc private func didTaplogoutButton() {
+    @objc private func didTapLogoutButton() {
         KeychainWrapper.standard.removeAllKeys()
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = scene.windows.first

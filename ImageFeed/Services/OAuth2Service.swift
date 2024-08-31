@@ -13,11 +13,13 @@ final class OAuth2Service {
     //MARK: - Singletone
 
     static let shared = OAuth2Service()
+    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
+    
     private var lastCode: String?
     
     //MARK: - Methods
@@ -51,19 +53,15 @@ final class OAuth2Service {
             }
             return
         }
-        guard code != lastCode else {
+        guard code != lastCode,
+              let request = makeOAuthTokenRequest(code: code)
+        else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
         task?.cancel()
         lastCode = code
-        let request = makeOAuthTokenRequest(code: code)
-        guard let request else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
-            return
-        }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             guard let self else {
                 NetworkErrors.logError(.invalidRequestError, file: (#file))

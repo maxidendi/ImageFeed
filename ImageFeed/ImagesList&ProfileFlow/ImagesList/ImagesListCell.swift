@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -20,7 +21,7 @@ final class ImagesListCell: UITableViewCell {
         contentView.backgroundColor = .ypBlack
         clipsToBounds = true
         selectionStyle = .none
-        addImageOfCellAndBottomGradientView()
+        addImageOfCellAndBottomGradientViews()
         addDateLadel()
         addLikeButton()
     }
@@ -29,9 +30,18 @@ final class ImagesListCell: UITableViewCell {
     
     static let reuseIdentifier = "ImagesListCell"
     
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
+    
     private var imageOfCell: UIImageView = {
         let imageOfCell = UIImageView()
         imageOfCell.translatesAutoresizingMaskIntoConstraints = false
+        imageOfCell.contentMode = .scaleAspectFill
         imageOfCell.layer.masksToBounds = true
         imageOfCell.layer.cornerRadius = 16
         return imageOfCell
@@ -60,15 +70,29 @@ final class ImagesListCell: UITableViewCell {
     
     //MARK: - Methods
     
-    func configCell(dateFormatter: Formatter, with indexPath: IndexPath, cellImage: UIImage) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageOfCell.kf.cancelDownloadTask()
+    }
+    
+    func configCell(
+        at indexPath: IndexPath,
+        with photo: Photo,
+        _ completion: @escaping () -> Void
+    ) {
         likeButton.imageView?.image = indexPath.row % 2 == 0 ?
                                 UIImage(named: "active_like") :
                                 UIImage(named: "no_active_like")
-        dateLabel.text = dateFormatter.string(for: Date())
-        imageOfCell.image = cellImage
-        if bottomGradient.layer.sublayers == nil {
-            addBottomGradienLayer()
-        }
+        dateLabel.text = dateFormatter.string(for: photo.createdAt)
+        imageOfCell.kf.setImage(
+            with: URL(string: photo.smallImageURL),
+            placeholder: UIImage(named: "image_placeholder")) { [weak self] _ in
+                guard let self else { return }
+                completion()
+                if self.bottomGradient.layer.sublayers == nil {
+                    self.addBottomGradienLayer()
+                }
+            }
     }
     
     private func addBottomGradienLayer() {
@@ -87,7 +111,7 @@ final class ImagesListCell: UITableViewCell {
         bottomGradient.layer.addSublayer(layerGradient)
     }
     
-    private func addImageOfCellAndBottomGradientView() {
+    private func addImageOfCellAndBottomGradientViews() {
         contentView.addSubview(imageOfCell)
         imageOfCell.addSubview(bottomGradient)
         NSLayoutConstraint.activate([

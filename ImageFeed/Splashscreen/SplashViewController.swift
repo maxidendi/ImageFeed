@@ -22,6 +22,8 @@ final class SplashViewController: UIViewController {
     
     private let profileImageService = ProfileImageService.shared
     
+    private let imagesListService = ImagesListService.shared
+    
     private let storage = OAuth2KeychainTokenStorage.shared
     
     private lazy var splashLogo: UIImageView = {
@@ -98,6 +100,7 @@ final class SplashViewController: UIViewController {
             switch result {
             case .success(let profile):
                 self.switchToImagesListFlow()
+                self.imagesListService.fetchPhotosNextPage()
                 self.profileImageService.fetchProfileImageURL(
                     username: profile.username,
                     token: token) { _ in
@@ -113,7 +116,7 @@ final class SplashViewController: UIViewController {
                     style: .default,
                     handler: { [weak self] _ in self?.chooseTheFlowToContinue()})
                 alert.addAction(action)
-                self.present(alert, animated: true)
+                present(alert, animated: true)
             }
         }
     }

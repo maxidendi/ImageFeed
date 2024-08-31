@@ -12,17 +12,19 @@ final class ProfileService {
     //MARK: - Singletone
 
     static let shared = ProfileService()
+    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
+    
     private(set) var profile: Profile?
 
     //MARK: - Methods
     
     private func makeProfileRequest(token: String) -> URLRequest? {
-        guard let url = URL(string: "/me", relativeTo: Constants.defaultBaseURL)
+        guard let url = URL(string: Constants.defaultBaseURLString + "/me")
         else {
             assertionFailure("Failed to create URL")
             return nil
@@ -44,13 +46,9 @@ final class ProfileService {
             }
             return
         }
-        guard task == nil else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
-            return
-        }
-        let request = makeProfileRequest(token: token)
-        guard let request else {
+        guard task == nil,
+              let request = makeProfileRequest(token: token)
+        else {
             NetworkErrors.logError(.invalidRequestError, file: (#file))
             completion(.failure(NetworkErrors.invalidRequestError))
             return
