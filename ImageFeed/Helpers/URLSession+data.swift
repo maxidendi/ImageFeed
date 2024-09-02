@@ -25,7 +25,7 @@ extension URLSession {
                 } catch {
                     print("""
                         -------------
-                        Decode error: \(error.localizedDescription)
+                        Decode error: \(error)
                         File: \((#file as NSString).lastPathComponent)
                         Function: \(#function)
                         Line: \(#line)

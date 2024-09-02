@@ -7,13 +7,15 @@
 
 import UIKit
 
+protocol ImagesListCellDelegate: AnyObject {
+    func imagesListCellDidTapLike(_ cell: ImagesListCell)
+}
+
 final class ImagesListViewController: UIViewController {
     
     //MARK: - Properties
     
     private var photos: [Photo] = []
-    
-    private let photosName: [String] = Array(0..<20).map({"\($0)"})
     
     private let imagesListService = ImagesListService.shared
     
@@ -29,14 +31,6 @@ final class ImagesListViewController: UIViewController {
             forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
         return tableView
     } ()
-
-//    private lazy var dateFormatter: DateFormatter = {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .long
-//        formatter.timeStyle = .none
-//        formatter.locale = Locale(identifier: "ru_RU")
-//        return formatter
-//    }()
     
     //MARK: - Methods of lifecircle
 
@@ -59,16 +53,6 @@ final class ImagesListViewController: UIViewController {
     }
     
     //MARK: - Methods
-        
-    private func addTableView() {
-        view.addSubview(tableView)
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-    }
     
     private func updateTableViewAnimated() {
         let oldPhotosCount = photos.count
@@ -82,6 +66,16 @@ final class ImagesListViewController: UIViewController {
                 tableView.insertRows(at: indexPaths, with: .automatic)
             }
         }
+    }
+
+    private func addTableView() {
+        view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 }
 
@@ -98,11 +92,11 @@ extension ImagesListViewController: UITableViewDataSource {
             withIdentifier: ImagesListCell.reuseIdentifier,
             for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
-        imageListCell.configCell(
-            at: indexPath,
-            with: photos[indexPath.row]) { [weak self] in
-                self?.tableView.reloadRows(at: [indexPath], with: .automatic)
-            }
+        imageListCell.delegate = self
+        imageListCell.configCell(with: photos[indexPath.row]) { [weak self] in
+            guard let self else { return }
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
         return imageListCell
     }
 }
@@ -120,8 +114,7 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let singleImageViewController = SingleImageViewController(
-            image: UIImage(named: photosName[indexPath.row]) ?? UIImage())
+        let singleImageViewController = SingleImageViewController(photo: photos[indexPath.row])
         singleImageViewController.modalPresentationStyle = .fullScreen
         singleImageViewController.modalTransitionStyle = .crossDissolve
         present(singleImageViewController, animated: true)
@@ -140,3 +133,25 @@ extension ImagesListViewController: UITableViewDelegate {
     }
 }
 
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imagesListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(
+            photoId: photo.id,
+            isLike: !photo.isLiked) { [weak self] result in
+                UIBlockingProgressHUD.dismiss()
+                guard let self else { return }
+                switch result {
+                case .success():
+                    self.photos = imagesListService.photos
+                    cell.setIsLiked(photos[indexPath.row].isLiked)
+                case .failure(let error):
+                    //TODO: handle the error
+                    print(error.localizedDescription)
+                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                }
+            }
+    }
+}

@@ -23,6 +23,11 @@ final class ProfileService {
 
     //MARK: - Methods
     
+    func cleanProfile() {
+        profile = nil
+        task?.cancel()
+    }
+    
     private func makeProfileRequest(token: String) -> URLRequest? {
         guard let url = URL(string: Constants.defaultBaseURLString + "/me")
         else {

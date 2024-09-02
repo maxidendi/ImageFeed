@@ -155,6 +155,10 @@ final class ProfileViewController: UIViewController {
     
     @objc private func didTapLogoutButton() {
         KeychainWrapper.standard.removeAllKeys()
+        ProfileService.shared.cleanProfile()
+        ProfileImageService.shared.cleanProfileImage()
+        ImagesListService.shared.cleanImagesList()
+        ProfileLogoutService.shared.logout()
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = scene.windows.first
          else {

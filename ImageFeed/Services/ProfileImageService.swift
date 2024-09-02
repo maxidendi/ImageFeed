@@ -25,6 +25,11 @@ final class ProfileImageService {
 
     //MARK: - Methods
     
+    func cleanProfileImage() {
+        avatarURL = nil
+        task?.cancel()
+    }
+    
     private func makeProfileImageRequest(token: String, username: String) -> URLRequest? {
         guard let url = URL(string: Constants.defaultBaseURLString + "/users/\(username)")
         else {
