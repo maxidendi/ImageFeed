@@ -7,6 +7,7 @@
 
 import Foundation
 import WebKit
+import SwiftKeychainWrapper
 
 final class ProfileLogoutService {
     
@@ -32,7 +33,9 @@ final class ProfileLogoutService {
                     completionHandler: {})
             }
         }
-        
-        
+        KeychainWrapper.standard.removeAllKeys()
+        ProfileService.shared.cleanProfile()
+        ProfileImageService.shared.cleanProfileImage()
+        ImagesListService.shared.cleanImagesList()
     }
 }

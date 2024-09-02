@@ -120,7 +120,7 @@ final class ImagesListCell: UITableViewCell {
         layoutIfNeeded()
         let layerGradient = CAGradientLayer()
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
-                                UIColor.ypBlack.withAlphaComponent(1.0).cgColor]
+                                UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
         layerGradient.frame = bottomGradient.bounds
         bottomGradient.layer.addSublayer(layerGradient)
     }

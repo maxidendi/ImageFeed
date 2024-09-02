@@ -37,7 +37,7 @@ final class OAuth2Service {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 10)
         request.httpMethod = "POST"
         return request
     }
@@ -56,7 +56,7 @@ final class OAuth2Service {
         guard code != lastCode,
               let request = makeOAuthTokenRequest(code: code)
         else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
+            NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
@@ -64,7 +64,7 @@ final class OAuth2Service {
         lastCode = code
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             guard let self else {
-                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
                 completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }

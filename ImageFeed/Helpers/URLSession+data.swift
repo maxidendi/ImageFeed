@@ -56,20 +56,20 @@ extension URLSession {
                       let response,
                       let statusCode = (response as? HTTPURLResponse)?.statusCode
                 else {
-                    NetworkErrors.logError(.urlSessionError, file: (#file))
+                    NetworkErrors.logError(.urlSessionError, #file, #function, #line)
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.urlSessionError))
                 }
                 guard 200..<300 ~= statusCode
                 else {
-                    NetworkErrors.logError(.httpsStatusCodeError(statusCode), file: (#file))
+                    NetworkErrors.logError(.httpsStatusCodeError(statusCode), #file, #function, #line)
                     print("Data: \(String(data: data, encoding: .utf8) ?? "")")
                     return fulfillCompletionOnMainThread(
                         .failure(NetworkErrors.httpsStatusCodeError(statusCode)))
                 }
                 return fulfillCompletionOnMainThread(.success(data))
             }
-            NetworkErrors.logError(.urlRequestError(error), file: (#file))
+            NetworkErrors.logError(.urlRequestError(error), #file, #function, #line)
             fulfillCompletionOnMainThread(.failure(NetworkErrors.urlRequestError(error)))
         }
         return task

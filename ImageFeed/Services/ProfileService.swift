@@ -34,7 +34,7 @@ final class ProfileService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 10)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -54,13 +54,13 @@ final class ProfileService {
         guard task == nil,
               let request = makeProfileRequest(token: token)
         else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
+            NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else {
-                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
                 completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }

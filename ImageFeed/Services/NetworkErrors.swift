@@ -34,9 +34,9 @@ enum NetworkErrors: Error, LocalizedError {
     
     static func logError(
         _ error: NetworkErrors,
-        file: String,
-        function: String = #function,
-        line: Int = #line
+        _ file: String,
+        _ function: String,
+        _ line: Int
     ) {
         print("""
             -------------

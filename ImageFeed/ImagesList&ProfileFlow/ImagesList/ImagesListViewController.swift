@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 protocol ImagesListCellDelegate: AnyObject {
     func imagesListCellDidTapLike(_ cell: ImagesListCell)
@@ -18,6 +19,8 @@ final class ImagesListViewController: UIViewController {
     private var photos: [Photo] = []
     
     private let imagesListService = ImagesListService.shared
+    
+    private let alertPresenter = AlertService.shared
     
     private var imagesListObserver: NSObjectProtocol?
     
@@ -37,12 +40,6 @@ final class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         addTableView()
-        imagesListObserver = NotificationCenter.default.addObserver(
-            forName: ImagesListService.didChangeNotification,
-            object: nil,
-            queue: .main) { [weak self] _ in
-                self?.updateTableViewAnimated()
-            }
         tableView.dataSource = self
         tableView.delegate = self
         tableView.contentInset = UIEdgeInsets(
@@ -50,9 +47,33 @@ final class ImagesListViewController: UIViewController {
             left: 0,
             bottom: 12,
             right: 0)
+        imagesListObserver = NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                guard let self else { return }
+                self.updateTableViewAnimated()
+            }
+        fetchPhotoNextPage()
     }
     
     //MARK: - Methods
+    
+    private func fetchPhotoNextPage() {
+        ProgressHUD.animate()
+        imagesListService.fetchPhotosNextPage() { [weak self] result in
+            ProgressHUD.dismiss()
+            guard let self else { return }
+            switch result {
+            case .success():
+                break
+            case .failure(_):
+                alertPresenter.showNetworkAlertWithRetry(on: self) {
+                    self.fetchPhotoNextPage()
+                }
+            }
+        }
+    }
     
     private func updateTableViewAnimated() {
         let oldPhotosCount = photos.count
@@ -109,7 +130,7 @@ extension ImagesListViewController: UITableViewDelegate {
         forRowAt indexPath: IndexPath
     ) {
         if indexPath.row + 1 == photos.count {
-            imagesListService.fetchPhotosNextPage()
+            fetchPhotoNextPage()
         }
     }
     
@@ -147,10 +168,10 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 case .success():
                     self.photos = imagesListService.photos
                     cell.setIsLiked(photos[indexPath.row].isLiked)
-                case .failure(let error):
-                    //TODO: handle the error
-                    print(error.localizedDescription)
-                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                case .failure(_):
+                    alertPresenter.showNetworkAlertWithRetry(on: self) { 
+                        self.imagesListCellDidTapLike(cell)
+                    }
                 }
             }
     }

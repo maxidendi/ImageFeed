@@ -26,6 +26,8 @@ final class SingleImageViewController: UIViewController {
     
     private var photo: Photo
     
+    private let alertPresenter = AlertService.shared
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -64,7 +66,7 @@ final class SingleImageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
         scrollView.delegate = self
-        scrollView.minimumZoomScale = 0.1
+        scrollView.minimumZoomScale = 0.05
         scrollView.maximumZoomScale = 1.25
         addScrollViewWithImageView()
         addBackButton()
@@ -83,9 +85,11 @@ final class SingleImageViewController: UIViewController {
             case .success(let value):
                 self.configureImageView(with: value.image)
                 self.rescaleAndCenterImageInScrollView(image: value.image)
-            case .failure(let error):
-                //TODO: show alert
-                print(error.localizedDescription)
+            case .failure(_):
+                alertPresenter.showNetworkAlertWithRetry(on: self) { [weak self] in
+                    guard let self else { return }
+                    self.setImage()
+                }
             }
         }
     }

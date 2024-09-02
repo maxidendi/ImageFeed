@@ -48,7 +48,7 @@ final class ImagesListService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 10)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -60,20 +60,20 @@ final class ImagesListService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 10)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = isLike ? "POST" : "DELETE"
         return request
     }
     
-    func fetchPhotosNextPage() {
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
         let page = lastLoadedPage + 1
 
         guard Thread.isMainThread 
         else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchPhotosNextPage()
+                self.fetchPhotosNextPage(completion)
             }
             return
         }
@@ -81,13 +81,13 @@ final class ImagesListService {
               let token = keyChainStorage.token,
               let request = makePhotosNextPageRequest(token: token, page: page) 
         else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
+            NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self 
             else {
-                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
                 return
             }
             switch result {
@@ -98,9 +98,10 @@ final class ImagesListService {
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self)
+                let void: Void
+                completion(.success(void))
             case .failure(let error):
-                //TODO: handle the error
-                print(error.localizedDescription)
+                completion(.failure(error))
             }
             self.nextPageTask = nil
         }
@@ -125,13 +126,13 @@ final class ImagesListService {
               let token = keyChainStorage.token,
               let request = makeIsLikedRequest(token: token, photoID: photoId, isLike: isLike)
         else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
+            NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<LikedPhoto, Error>) in
             guard let self
             else {
-                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
                 return
             }
             switch result {
@@ -142,8 +143,6 @@ final class ImagesListService {
                 let void: Void
                 completion(.success(void))
             case .failure(let error):
-                //TODO: handle the error
-                print(error.localizedDescription)
                 completion(.failure(error))
             }
             self.likeTask = nil

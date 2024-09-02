@@ -19,6 +19,7 @@
 		3F93977A2C803C7A004864BD /* ImagesListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9397792C803C7A004864BD /* ImagesListModels.swift */; };
 		3F93977C2C804181004864BD /* ImagesListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F93977B2C804181004864BD /* ImagesListService.swift */; };
 		3F93978E2C859CAD004864BD /* ProfileLogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F93978D2C859CAD004864BD /* ProfileLogoutService.swift */; };
+		3F9397902C85C4D3004864BD /* AlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F93978F2C85C4D3004864BD /* AlertService.swift */; };
 		3FC17B282C65315C005DC458 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC17B272C65315C005DC458 /* ProfileService.swift */; };
 		3FC17B2B2C65E70C005DC458 /* ProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC17B2A2C65E70C005DC458 /* ProfileModels.swift */; };
 		3FC17B2D2C6624A5005DC458 /* ProfileImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC17B2C2C6624A5005DC458 /* ProfileImageService.swift */; };
@@ -50,6 +51,7 @@
 		3F9397792C803C7A004864BD /* ImagesListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListModels.swift; sourceTree = "<group>"; };
 		3F93977B2C804181004864BD /* ImagesListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListService.swift; sourceTree = "<group>"; };
 		3F93978D2C859CAD004864BD /* ProfileLogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLogoutService.swift; sourceTree = "<group>"; };
+		3F93978F2C85C4D3004864BD /* AlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertService.swift; sourceTree = "<group>"; };
 		3FC17B272C65315C005DC458 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		3FC17B2A2C65E70C005DC458 /* ProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModels.swift; sourceTree = "<group>"; };
 		3FC17B2C2C6624A5005DC458 /* ProfileImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageService.swift; sourceTree = "<group>"; };
@@ -105,9 +107,10 @@
 				3F93977B2C804181004864BD /* ImagesListService.swift */,
 				3FC17B272C65315C005DC458 /* ProfileService.swift */,
 				3FC17B2C2C6624A5005DC458 /* ProfileImageService.swift */,
+				3F93978D2C859CAD004864BD /* ProfileLogoutService.swift */,
+				3F93978F2C85C4D3004864BD /* AlertService.swift */,
 				3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */,
 				3FC17B2E2C69D18E005DC458 /* NetworkErrors.swift */,
-				3F93978D2C859CAD004864BD /* ProfileLogoutService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				3F387A5D2C555573009FA802 /* OAuth2Service.swift in Sources */,
 				3FC17B2D2C6624A5005DC458 /* ProfileImageService.swift in Sources */,
 				3F387A642C561167009FA802 /* OAuth2KeychainTokenStorage.swift in Sources */,
+				3F9397902C85C4D3004864BD /* AlertService.swift in Sources */,
 				3FF83B7E2C3666C4001ED6D0 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
