@@ -47,7 +47,7 @@ final class ProfileService {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchProfile(token: token, completion: completion)
+                fetchProfile(token: token, completion: completion)
             }
             return
         }
@@ -70,6 +70,7 @@ final class ProfileService {
                     self.profile = profile
                     completion(.success(profile))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.task = nil

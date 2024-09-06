@@ -32,9 +32,13 @@ final class ImagesListCell: UITableViewCell {
     
     weak var delegate: ImagesListCellDelegate?
     
+    private let alertPresented = AlertService.shared
+    
+    private var layers: Set<CALayer> = []
+    
     static private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
+        formatter.dateStyle = .medium
         formatter.timeStyle = .none
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter
@@ -44,7 +48,8 @@ final class ImagesListCell: UITableViewCell {
         let imageOfCell = UIImageView()
         imageOfCell.isUserInteractionEnabled = true
         imageOfCell.translatesAutoresizingMaskIntoConstraints = false
-        imageOfCell.contentMode = .scaleAspectFill
+        imageOfCell.contentMode = .center
+        imageOfCell.backgroundColor = .ypWhiteAlpha50
         imageOfCell.layer.masksToBounds = true
         imageOfCell.layer.cornerRadius = 16
         return imageOfCell
@@ -76,29 +81,31 @@ final class ImagesListCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageOfCell.kf.cancelDownloadTask()
+        layers.forEach { $0.removeFromSuperlayer() }
     }
     
     func configCell(
         with photo: Photo,
-        _ completion: @escaping () -> Void
+        _ completion: @escaping (Result<Void, Error>) -> Void
     ) {
         likeButton.imageView?.image = photo.isLiked ?
                                 UIImage(named: "active_like") :
                                 UIImage(named: "no_active_like")
         dateLabel.text = ImagesListCell.dateFormatter.string(for: photo.createdAt)
+        imageOfCell.kf.indicatorType = .activity
         imageOfCell.kf.setImage(
             with: URL(string: photo.smallImageURL),
             placeholder: UIImage(named: "image_placeholder")) { [weak self] result in
                 guard let self else { return }
                 switch result {
                 case .success(_):
-                    if self.bottomGradient.layer.sublayers == nil {
-                        self.addBottomGradienLayer()
+                    if bottomGradient.layer.sublayers == nil {
+                        addBottomGradienLayer()
                     }
-                    completion()
+                    let void: Void
+                    completion(.success(void))
                 case .failure(let error):
-                    //TODO: handle the error
-                    print(error.localizedDescription)
+                    completion(.failure(error))
                 }
             }
     }
@@ -119,6 +126,7 @@ final class ImagesListCell: UITableViewCell {
         ])
         layoutIfNeeded()
         let layerGradient = CAGradientLayer()
+        layers.insert(layerGradient)
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
                                 UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
         layerGradient.frame = bottomGradient.bounds

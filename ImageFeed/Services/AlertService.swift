@@ -15,35 +15,71 @@ final class AlertService {
     
     private init() {}
     
+    //MARK: - Structs
+    
+    private struct AlertModel {
+        let title: String
+        let message: String
+        let buttons: [AlertButton]
+    }
+    
+    private struct AlertButton {
+        let title: String
+        var completion: (() -> Void)? = nil
+    }
+    
     //MARK: - Methods
     
-    func showNetworkAlert(on vc: UIViewController, _ completion: (() -> Void)? = nil) {
+    private func showAlert(model: AlertModel)  -> UIAlertController {
         let alert = UIAlertController(
+            title: model.title,
+            message: model.message,
+            preferredStyle: .alert)
+        
+        model.buttons.forEach { button in
+            let action = UIAlertAction(
+                title: button.title,
+                style: .default,
+                handler: { _ in button.completion?() })
+            alert.addAction(action)
+        }
+        return alert
+    }
+    
+    func showNetworkAlert(on vc: UIViewController, _ completion: (() -> Void)? = nil) {
+        let button = AlertButton(
+            title: "OK",
+            completion: completion)
+        let model = AlertModel(
             title: "Что-то пошло не так",
             message: "Не удалось войти в систему(",
-            preferredStyle: .alert)
-        let action = UIAlertAction(
-            title: "OK",
-            style: .default,
-            handler: { _ in completion?() })
-        alert.addAction(action)
-        vc.present(alert, animated: true)
+            buttons: [button])
+        vc.present(showAlert(model: model), animated: true)
     }
     
     func showNetworkAlertWithRetry(on vc: UIViewController, _ completion: @escaping () -> Void) {
-        let alert = UIAlertController(
+        let firstButton = AlertButton(
+            title: "Не надо")
+        let secondButton = AlertButton(
+            title: "Повторить",
+            completion: completion)
+        let model = AlertModel(
             title: "Что-то пошло не так",
             message: "Попробовать еще раз?",
-            preferredStyle: .alert)
-        let actionDontTry = UIAlertAction(
-            title: "Не надо",
-            style: .default)
-        alert.addAction(actionDontTry)
-        let actionRetry = UIAlertAction(
-            title: "Повторить",
-            style: .default,
-            handler: { _ in completion() })
-        alert.addAction(actionRetry)
-        vc.present(alert, animated: true)
+            buttons: [firstButton, secondButton])
+        vc.present(showAlert(model: model), animated: true)
+    }
+    
+    func showSureToLogout(on vc: UIViewController, _ completion: @escaping () -> Void) {
+        let firstButton = AlertButton(
+            title: "Да",
+            completion: completion)
+        let secondButton = AlertButton(
+            title: "Нет")
+        let model = AlertModel(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            buttons: [firstButton, secondButton])
+        vc.present(showAlert(model: model), animated: true)
     }
 }

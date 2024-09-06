@@ -152,7 +152,7 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		3FC17B362C6A88FE005DC458 /* ImagesList&ProfileFlow */ = {
+		3FC17B362C6A88FE005DC458 /* ImagesList */ = {
 			isa = PBXGroup;
 			children = (
 				3FC17B372C6A8952005DC458 /* ImagesTabBarController.swift */,
@@ -160,7 +160,7 @@
 				3F387A652C56409B009FA802 /* SingleImage */,
 				3F139D712C3E5E2400986505 /* Profile */,
 			);
-			path = "ImagesList&ProfileFlow";
+			path = ImagesList;
 			sourceTree = "<group>";
 		};
 		3FC78B472C648C28009606A8 /* Splashscreen */ = {
@@ -192,7 +192,7 @@
 			children = (
 				3FC78B472C648C28009606A8 /* Splashscreen */,
 				3F387A552C536ACB009FA802 /* AuthFlow */,
-				3FC17B362C6A88FE005DC458 /* ImagesList&ProfileFlow */,
+				3FC17B362C6A88FE005DC458 /* ImagesList */,
 				3FC17B292C65E6B5005DC458 /* Models */,
 				3F387A5E2C55FFB8009FA802 /* Helpers */,
 				3F387A5B2C553E99009FA802 /* Services */,

@@ -37,6 +37,6 @@ struct Photo {
     var welcomeDescription: String? { photoResult.description }
     var thumbImageURL: String { photoResult.urls.thumb }
     var smallImageURL: String { photoResult.urls.small }
-    var largeImageURL: String { photoResult.urls.raw }
+    var largeImageURL: String { photoResult.urls.full }
     var isLiked: Bool { photoResult.likedByUser }
 }

@@ -18,9 +18,27 @@ final class ImagesListService {
     
     //MARK: - Properties
     
-    private var lastLoadedPage: Int = .zero
+    private var lastLoadedPage: Int = 1
     
-    private(set) var photos: [Photo] = []
+    private var photos: [Photo] = []
+    
+    private let queue = DispatchQueue(
+        label: "customConcurrentQueue",
+        qos: .userInteractive,
+        attributes: .concurrent)
+    
+    private(set) var photosProvider: [Photo] {
+        get {
+            queue.sync {
+                photos
+            }
+        }
+        set {
+            queue.sync(flags: .barrier) {
+                photos = newValue
+            }
+        }
+    }
     
     private var nextPageTask: URLSessionTask?
     
@@ -33,8 +51,8 @@ final class ImagesListService {
     //MARK: - Methods
     
     func cleanImagesList() {
-        photos = []
-        lastLoadedPage = .zero
+        photosProvider = []
+        lastLoadedPage = 1
         nextPageTask?.cancel()
         likeTask?.cancel()
     }
@@ -54,8 +72,8 @@ final class ImagesListService {
         return request
     }
     
-    private func makeIsLikedRequest(token: String, photoID: String, isLike: Bool) -> URLRequest? {
-        guard let url = URL(string: Constants.defaultBaseURLString + "/photos/\(photoID)/like")
+    private func makeIsLikedRequest(token: String, index: Int, isLike: Bool) -> URLRequest? {
+        guard let url = URL(string: Constants.defaultBaseURLString + "/photos/\(photos[index].id)/like")
         else {
             assertionFailure("Failed to create URL")
             return nil
@@ -67,19 +85,17 @@ final class ImagesListService {
     }
     
     func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
-        let page = lastLoadedPage + 1
-
         guard Thread.isMainThread 
         else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchPhotosNextPage(completion)
+                fetchPhotosNextPage(completion)
             }
             return
         }
         guard nextPageTask == nil,
               let token = keyChainStorage.token,
-              let request = makePhotosNextPageRequest(token: token, page: page) 
+              let request = makePhotosNextPageRequest(token: token, page: lastLoadedPage)
         else {
             NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             return
@@ -92,25 +108,26 @@ final class ImagesListService {
             }
             switch result {
             case .success(let photosResult):
-                lastLoadedPage = page
-                let photos = photosResult.map{ Photo(photoResult: $0) }
-                self.photos.append(contentsOf: photos)
+                let newPhotos = photosResult.map{ Photo(photoResult: $0) }
+                photosProvider.append(contentsOf: newPhotos)
+                lastLoadedPage += 1
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self)
                 let void: Void
                 completion(.success(void))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.nextPageTask = nil
         }
-        self.nextPageTask = task
+        nextPageTask = task
         task.resume()
     }
     
     func changeLike(
-        photoId: String,
+        index: Int,
         isLike: Bool,
         _ completion: @escaping (Result<Void, Error>) -> Void
     ) {
@@ -118,13 +135,13 @@ final class ImagesListService {
         else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.changeLike(photoId: photoId, isLike: isLike, completion)
+                changeLike(index: index, isLike: isLike, completion)
             }
             return
         }
         guard likeTask == nil,
               let token = keyChainStorage.token,
-              let request = makeIsLikedRequest(token: token, photoID: photoId, isLike: isLike)
+              let request = makeIsLikedRequest(token: token, index: index, isLike: isLike)
         else {
             NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             return
@@ -137,18 +154,16 @@ final class ImagesListService {
             }
             switch result {
             case .success(let likedPhoto):
-                if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                    photos[index].photoResult.likedByUser = likedPhoto.photo.likedByUser
-                }
+                photosProvider[index].photoResult.likedByUser = likedPhoto.photo.likedByUser
                 let void: Void
                 completion(.success(void))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.likeTask = nil
         }
-        self.likeTask = task
+        likeTask = task
         task.resume()
-
     }
 }

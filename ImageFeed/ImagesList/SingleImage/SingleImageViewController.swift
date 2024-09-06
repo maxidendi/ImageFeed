@@ -21,7 +21,7 @@ final class SingleImageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+       
     //MARK: - Properties
     
     private var photo: Photo
@@ -36,10 +36,11 @@ final class SingleImageViewController: UIViewController {
     } ()
     
     private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
+        let scrollView = UIScrollView(frame: view.bounds)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.contentSize = imageView.bounds.size
         return scrollView
     } ()
@@ -66,7 +67,7 @@ final class SingleImageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
         scrollView.delegate = self
-        scrollView.minimumZoomScale = 0.05
+        scrollView.minimumZoomScale = 0.01
         scrollView.maximumZoomScale = 1.25
         addScrollViewWithImageView()
         addBackButton()
@@ -78,37 +79,34 @@ final class SingleImageViewController: UIViewController {
     
     private func setImage() {
         ProgressHUD.animate()
-        imageView.kf.setImage(with: URL(string: photo.largeImageURL)) { [weak self] result in
-            ProgressHUD.dismiss()
-            guard let self else { return }
-            switch result {
-            case .success(let value):
-                self.configureImageView(with: value.image)
-                self.rescaleAndCenterImageInScrollView(image: value.image)
-            case .failure(_):
-                alertPresenter.showNetworkAlertWithRetry(on: self) { [weak self] in
-                    guard let self else { return }
-                    self.setImage()
+        imageView.kf.setImage(
+            with: URL(string: photo.largeImageURL)) { [weak self] result in
+                ProgressHUD.dismiss()
+                guard let self else { return }
+                switch result {
+                case .success(let value):
+                    rescaleAndCenterImageInScrollView(image: value.image)
+                case .failure(_):
+                    if !isBeingDismissed {
+                        alertPresenter.showNetworkAlertWithRetry(on: self) {
+                            self.setImage()
+                        }
+                    }
                 }
             }
-        }
-    }
-    
-    private func configureImageView(with image: UIImage) {
-        imageView.frame.size = image.size
-        scrollView.contentSize = imageView.bounds.size
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
+        imageView.bounds.size = image.size
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
-        view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
         let hScale = visibleRectSize.height / imageSize.height
         let wScale = visibleRectSize.width / imageSize.width
         let scale = min(maxZoomScale, max(hScale, wScale))
         scrollView.minimumZoomScale = min(maxZoomScale, max(minZoomScale, min(hScale, wScale)))
+        scrollView.maximumZoomScale = 3 * scale
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
         let newContentSize = scrollView.contentSize
@@ -139,9 +137,9 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapBackButton() {
-        imageView.kf.cancelDownloadTask()
         ProgressHUD.dismiss()
         dismiss(animated: true)
+        imageView.kf.cancelDownloadTask()
     }
     
     private func addShareButton() {
@@ -172,18 +170,9 @@ extension SingleImageViewController: UIScrollViewDelegate {
         }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        let visibleRectSize = scrollView.bounds.size
-        let newContentSize = scrollView.contentSize
-        if visibleRectSize.width > newContentSize.width {
-            insets.left = (visibleRectSize.width - newContentSize.width) / 2
-            insets.right = (visibleRectSize.width - newContentSize.width) / 2
-        }
-        if visibleRectSize.height > newContentSize.height {
-            insets.top = (visibleRectSize.height - newContentSize.height) / 2
-            insets.bottom = (visibleRectSize.height - newContentSize.height) / 2
-        }
-        scrollView.contentInset = insets
+        let xInset = max((scrollView.bounds.width - scrollView.contentSize.width) / 2, 0)
+        let yInset = max((scrollView.bounds.height - scrollView.contentSize.height) / 2, 0)
+        scrollView.contentInset = UIEdgeInsets(top: yInset, left: xInset, bottom: yInset, right: xInset)
     }
 }
 

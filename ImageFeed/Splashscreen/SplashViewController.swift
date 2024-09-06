@@ -82,7 +82,7 @@ final class SplashViewController: UIViewController {
         let authNavigationController = UINavigationController(
             rootViewController: authViewController)
         authNavigationController.modalPresentationStyle = .fullScreen
-        authNavigationController.modalTransitionStyle = .coverVertical
+        authNavigationController.modalTransitionStyle = .crossDissolve
         present(authNavigationController, animated: true)
     }
     

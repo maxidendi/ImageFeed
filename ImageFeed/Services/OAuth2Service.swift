@@ -49,7 +49,7 @@ final class OAuth2Service {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchOAuthToken(withCode: code, completion: completion)
+                fetchOAuthToken(withCode: code, completion: completion)
             }
             return
         }
@@ -73,10 +73,11 @@ final class OAuth2Service {
                 let token = response.accessToken
                 completion(.success(token))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.task = nil
-            self.lastCode = nil
+            lastCode = nil
         }
         self.task = task
         task.resume()

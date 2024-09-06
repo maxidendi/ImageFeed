@@ -69,8 +69,8 @@ extension URLSession {
                 }
                 return fulfillCompletionOnMainThread(.success(data))
             }
-            NetworkErrors.logError(.urlRequestError(error), #file, #function, #line)
-            fulfillCompletionOnMainThread(.failure(NetworkErrors.urlRequestError(error)))
+            NetworkErrors.logError(.otherError(error), #file, #function, #line)
+            fulfillCompletionOnMainThread(.failure(NetworkErrors.otherError(error)))
         }
         return task
     }

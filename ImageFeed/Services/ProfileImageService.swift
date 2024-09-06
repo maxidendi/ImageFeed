@@ -50,7 +50,7 @@ final class ProfileImageService {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchProfileImageURL(username: username, token: token, completion: completion)
+                fetchProfileImageURL(username: username, token: token, completion: completion)
             }
             return
         }
@@ -70,12 +70,13 @@ final class ProfileImageService {
             switch result {
             case .success(let profileUserResult):
                     let profileImageURL = profileUserResult.profileImage.medium
-                    self.avatarURL = profileImageURL
+                    avatarURL = profileImageURL
                     NotificationCenter.default.post(
                         name: ProfileImageService.didChangeNotification,
                         object: self)
                     completion(.success(profileImageURL))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.task = nil
@@ -83,5 +84,4 @@ final class ProfileImageService {
         self.task = task
         task.resume()
     }
-
 }

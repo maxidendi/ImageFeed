@@ -112,7 +112,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 switch result {
                 case .success(let token):
                     OAuth2KeychainTokenStorage.shared.token = token
-                    self.delegate?.didAuthenticate(self, with: token)
+                    delegate?.didAuthenticate(self, with: token)
                 case .failure(_):
                     alertPresenter.showNetworkAlert(on: self)
                 }
@@ -121,7 +121,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        //TODO: some code
     }
 }
 

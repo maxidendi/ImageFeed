@@ -52,7 +52,7 @@ final class ImagesListViewController: UIViewController {
             object: nil,
             queue: .main) { [weak self] _ in
                 guard let self else { return }
-                self.updateTableViewAnimated()
+                updateTableViewAnimated()
             }
         fetchPhotoNextPage()
     }
@@ -77,8 +77,8 @@ final class ImagesListViewController: UIViewController {
     
     private func updateTableViewAnimated() {
         let oldPhotosCount = photos.count
-        let newPhotosCount = imagesListService.photos.count
-        photos = imagesListService.photos
+        let newPhotosCount = imagesListService.photosProvider.count
+        photos = imagesListService.photosProvider
         if oldPhotosCount != newPhotosCount {
             tableView.performBatchUpdates {
                 let indexPaths = (oldPhotosCount..<newPhotosCount).map { i in
@@ -114,9 +114,14 @@ extension ImagesListViewController: UITableViewDataSource {
             for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
         imageListCell.delegate = self
-        imageListCell.configCell(with: photos[indexPath.row]) { [weak self] in
+        imageListCell.configCell(with: photos[indexPath.row]) { [weak self] result in
             guard let self else { return }
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            switch result {
+            case .success():
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            case .failure(_):
+                break
+            }
         }
         return imageListCell
     }
@@ -160,18 +165,16 @@ extension ImagesListViewController: ImagesListCellDelegate {
         let photo = photos[indexPath.row]
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(
-            photoId: photo.id,
+            index: indexPath.row,
             isLike: !photo.isLiked) { [weak self] result in
                 UIBlockingProgressHUD.dismiss()
                 guard let self else { return }
                 switch result {
                 case .success():
-                    self.photos = imagesListService.photos
+                    photos = imagesListService.photosProvider
                     cell.setIsLiked(photos[indexPath.row].isLiked)
                 case .failure(_):
-                    alertPresenter.showNetworkAlertWithRetry(on: self) { 
-                        self.imagesListCellDidTapLike(cell)
-                    }
+                    alertPresenter.showNetworkAlert(on: self)
                 }
             }
     }
