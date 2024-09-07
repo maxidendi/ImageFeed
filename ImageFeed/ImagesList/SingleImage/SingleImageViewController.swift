@@ -6,23 +6,27 @@
 //
 
 import UIKit
+import Kingfisher
+import ProgressHUD
 
 final class SingleImageViewController: UIViewController {
     
     //MARK: - Init
     
-    init(image: UIImage) {
+    init(photo: Photo) {
+        self.photo = photo
         super.init(nibName: nil, bundle: nil)
-        self.image = image
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+       
     //MARK: - Properties
     
-    private var image: UIImage = UIImage()
+    private var photo: Photo
+    
+    private let alertPresenter = AlertService.shared
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -32,10 +36,11 @@ final class SingleImageViewController: UIViewController {
     } ()
     
     private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
+        let scrollView = UIScrollView(frame: view.bounds)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.contentSize = imageView.bounds.size
         return scrollView
     } ()
@@ -62,27 +67,46 @@ final class SingleImageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
         scrollView.delegate = self
-        scrollView.minimumZoomScale = 0.1
+        scrollView.minimumZoomScale = 0.01
         scrollView.maximumZoomScale = 1.25
-        addScrollView()
-        addImageView()
+        addScrollViewWithImageView()
         addBackButton()
         addShareButton()
-        rescaleAndCenterImageInScrollView(image: image)
+        setImage()
     }
     
     //MARK: - Methods
     
+    private func setImage() {
+        ProgressHUD.animate()
+        imageView.kf.setImage(
+            with: URL(string: photo.largeImageURL)) { [weak self] result in
+                ProgressHUD.dismiss()
+                guard let self else { return }
+                switch result {
+                case .success(let value):
+                    rescaleAndCenterImageInScrollView(image: value.image)
+                case .failure(_):
+                    if !isBeingDismissed {
+                        alertPresenter.showNetworkAlertWithRetry(on: self) {
+                            self.setImage()
+                        }
+                    }
+                }
+            }
+    }
+    
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
+        imageView.bounds.size = image.size
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
-        view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
         let hScale = visibleRectSize.height / imageSize.height
         let wScale = visibleRectSize.width / imageSize.width
         let scale = min(maxZoomScale, max(hScale, wScale))
         scrollView.minimumZoomScale = min(maxZoomScale, max(minZoomScale, min(hScale, wScale)))
+        scrollView.maximumZoomScale = 3 * scale
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
         let newContentSize = scrollView.contentSize
@@ -91,21 +115,15 @@ final class SingleImageViewController: UIViewController {
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
     
-    private func addScrollView() {
+    private func addScrollViewWithImageView() {
         view.addSubview(scrollView)
+        scrollView.addSubview(imageView)
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-    
-    private func addImageView() {
-        scrollView.addSubview(imageView)
-        imageView.image = image
-        imageView.frame.size = image.size
-        scrollView.contentSize = imageView.bounds.size
     }
     
     private func addBackButton() {
@@ -119,7 +137,9 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapBackButton() {
+        ProgressHUD.dismiss()
         dismiss(animated: true)
+        imageView.kf.cancelDownloadTask()
     }
     
     private func addShareButton() {
@@ -133,6 +153,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapShareButton() {
+        guard let image = imageView.image else { return }
         let share = UIActivityViewController(
             activityItems: [image],
             applicationActivities: nil)
@@ -149,18 +170,9 @@ extension SingleImageViewController: UIScrollViewDelegate {
         }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        let visibleRectSize = scrollView.bounds.size
-        let newContentSize = scrollView.contentSize
-        if visibleRectSize.width > newContentSize.width {
-            insets.left = (visibleRectSize.width - newContentSize.width) / 2
-            insets.right = (visibleRectSize.width - newContentSize.width) / 2
-        }
-        if visibleRectSize.height > newContentSize.height {
-            insets.top = (visibleRectSize.height - newContentSize.height) / 2
-            insets.bottom = (visibleRectSize.height - newContentSize.height) / 2
-        }
-        scrollView.contentInset = insets
+        let xInset = max((scrollView.bounds.width - scrollView.contentSize.width) / 2, 0)
+        let yInset = max((scrollView.bounds.height - scrollView.contentSize.height) / 2, 0)
+        scrollView.contentInset = UIEdgeInsets(top: yInset, left: xInset, bottom: yInset, right: xInset)
     }
 }
 

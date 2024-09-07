@@ -22,6 +22,8 @@ final class AuthViewController: UIViewController {
     
     //MARK: - Properties
     
+    private let alertPresenter = AlertService.shared
+    
     weak var delegate: AuthViewControllerDelegate?
     
     private lazy var logo: UIImageView = {
@@ -110,24 +112,15 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 switch result {
                 case .success(let token):
                     OAuth2KeychainTokenStorage.shared.token = token
-                    self.delegate?.didAuthenticate(self, with: token)
+                    delegate?.didAuthenticate(self, with: token)
                 case .failure(_):
-                    let alert = UIAlertController(
-                        title: "Что-то пошло не так(",
-                        message: "Не удалось войти в систему",
-                        preferredStyle: .alert)
-                    let action = UIAlertAction(
-                        title: "OK",
-                        style: .default)
-                    alert.addAction(action)
-                    self.present(alert, animated: true)
+                    alertPresenter.showNetworkAlert(on: self)
                 }
             }
         }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        //TODO: some code
     }
 }
 

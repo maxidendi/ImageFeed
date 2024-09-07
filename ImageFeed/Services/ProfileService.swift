@@ -12,22 +12,29 @@ final class ProfileService {
     //MARK: - Singletone
 
     static let shared = ProfileService()
+    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
+    
     private(set) var profile: Profile?
 
     //MARK: - Methods
     
+    func cleanProfile() {
+        profile = nil
+        task?.cancel()
+    }
+    
     private func makeProfileRequest(token: String) -> URLRequest? {
-        guard let url = URL(string: "/me", relativeTo: Constants.defaultBaseURL)
+        guard let url = URL(string: Constants.defaultBaseURLString + "/me")
         else {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 10)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -40,24 +47,20 @@ final class ProfileService {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                self.fetchProfile(token: token, completion: completion)
+                fetchProfile(token: token, completion: completion)
             }
             return
         }
-        guard task == nil else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
-            completion(.failure(NetworkErrors.invalidRequestError))
-            return
-        }
-        let request = makeProfileRequest(token: token)
-        guard let request else {
-            NetworkErrors.logError(.invalidRequestError, file: (#file))
+        guard task == nil,
+              let request = makeProfileRequest(token: token)
+        else {
+            NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
             completion(.failure(NetworkErrors.invalidRequestError))
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else {
-                NetworkErrors.logError(.invalidRequestError, file: (#file))
+                NetworkErrors.logError(.invalidRequestError, #file, #function, #line)
                 completion(.failure(NetworkErrors.invalidRequestError))
                 return
             }
@@ -67,6 +70,7 @@ final class ProfileService {
                     self.profile = profile
                     completion(.success(profile))
             case .failure(let error):
+                NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
             }
             self.task = nil

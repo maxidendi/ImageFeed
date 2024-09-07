@@ -15,6 +15,8 @@ final class ProfileViewController: UIViewController {
     
     private let profile = ProfileService.shared.profile
     
+    private let alertPresenter = AlertService.shared
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var photoImageView: UIImageView = {
@@ -27,7 +29,7 @@ final class ProfileViewController: UIViewController {
         let logoutButton = UIButton.systemButton(
             with: UIImage(named: "arrow_forward") ?? UIImage(),
             target: self,
-            action: #selector(didTaplogoutButton))
+            action: #selector(didTapLogoutButton))
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         logoutButton.tintColor = .ypRed
         return logoutButton
@@ -79,7 +81,7 @@ final class ProfileViewController: UIViewController {
             object: nil,
             queue: .main) { [weak self] _ in
                 guard let self else { return }
-                self.updateAvatar()
+                updateAvatar()
             }
         updateAvatar()
     }
@@ -153,8 +155,15 @@ final class ProfileViewController: UIViewController {
         )
     }
     
-    @objc private func didTaplogoutButton() {
-        KeychainWrapper.standard.removeAllKeys()
+    @objc private func didTapLogoutButton() {
+        alertPresenter.showSureToLogout(on: self) { [weak self] in
+            guard let self else { return }
+            logoutProfile()
+        }
+    }
+    
+    private func logoutProfile() {
+        ProfileLogoutService.shared.logout()
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = scene.windows.first
          else {

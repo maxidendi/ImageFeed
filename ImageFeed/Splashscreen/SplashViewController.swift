@@ -22,7 +22,11 @@ final class SplashViewController: UIViewController {
     
     private let profileImageService = ProfileImageService.shared
     
+    private let imagesListService = ImagesListService.shared
+    
     private let storage = OAuth2KeychainTokenStorage.shared
+    
+    private let alertPresenter = AlertService.shared
     
     private lazy var splashLogo: UIImageView = {
         let splashLogo = UIImageView(image: UIImage(named: "vector"))
@@ -78,7 +82,7 @@ final class SplashViewController: UIViewController {
         let authNavigationController = UINavigationController(
             rootViewController: authViewController)
         authNavigationController.modalPresentationStyle = .fullScreen
-        authNavigationController.modalTransitionStyle = .coverVertical
+        authNavigationController.modalTransitionStyle = .crossDissolve
         present(authNavigationController, animated: true)
     }
     
@@ -97,23 +101,14 @@ final class SplashViewController: UIViewController {
             guard let self else { return }
             switch result {
             case .success(let profile):
-                self.switchToImagesListFlow()
-                self.profileImageService.fetchProfileImageURL(
+                switchToImagesListFlow()
+                profileImageService.fetchProfileImageURL(
                     username: profile.username,
                     token: token) { _ in
                     //TODO: handle the failure while fetch user avatar URL (if needed)
                     }
             case .failure(_):
-                let alert = UIAlertController(
-                    title: "Что-то пошло не так(",
-                    message: "Не удалось войти в систему",
-                    preferredStyle: .alert)
-                let action = UIAlertAction(
-                    title: "OK",
-                    style: .default,
-                    handler: { [weak self] _ in self?.chooseTheFlowToContinue()})
-                alert.addAction(action)
-                self.present(alert, animated: true)
+                alertPresenter.showNetworkAlert(on: self) { self.chooseTheFlowToContinue() }
             }
         }
     }

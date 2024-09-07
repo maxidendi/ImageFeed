@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -20,7 +21,7 @@ final class ImagesListCell: UITableViewCell {
         contentView.backgroundColor = .ypBlack
         clipsToBounds = true
         selectionStyle = .none
-        addImageOfCellAndBottomGradientView()
+        addImageOfCellAndBottomGradientViews()
         addDateLadel()
         addLikeButton()
     }
@@ -29,21 +30,38 @@ final class ImagesListCell: UITableViewCell {
     
     static let reuseIdentifier = "ImagesListCell"
     
-    private var imageOfCell: UIImageView = {
+    weak var delegate: ImagesListCellDelegate?
+    
+    private let alertPresented = AlertService.shared
+    
+    private var layers: Set<CALayer> = []
+    
+    static private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
+    
+    private lazy var imageOfCell: UIImageView = {
         let imageOfCell = UIImageView()
+        imageOfCell.isUserInteractionEnabled = true
         imageOfCell.translatesAutoresizingMaskIntoConstraints = false
+        imageOfCell.contentMode = .center
+        imageOfCell.backgroundColor = .ypWhiteAlpha50
         imageOfCell.layer.masksToBounds = true
         imageOfCell.layer.cornerRadius = 16
         return imageOfCell
     } ()
     
-    private var bottomGradient: UIView = {
+    private lazy var bottomGradient: UIView = {
         let gradient = UIView()
         gradient.translatesAutoresizingMaskIntoConstraints = false
         return gradient
     } ()
     
-    private var dateLabel: UILabel = {
+    private lazy var dateLabel: UILabel = {
         let dateLabel = UILabel()
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.font = .systemFont(ofSize: 13)
@@ -51,24 +69,51 @@ final class ImagesListCell: UITableViewCell {
         return dateLabel
     } ()
     
-    private var likeButton: UIButton = {
+    private lazy var likeButton: UIButton = {
         let likeButton = UIButton()
         likeButton.translatesAutoresizingMaskIntoConstraints = false
-        likeButton.setImage(UIImage(named: "active_like"), for: .normal)
+        likeButton.setImage(UIImage(named: "no_active_like"), for: .normal)
         return likeButton
     } ()
     
     //MARK: - Methods
     
-    func configCell(dateFormatter: Formatter, with indexPath: IndexPath, cellImage: UIImage) {
-        likeButton.imageView?.image = indexPath.row % 2 == 0 ?
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageOfCell.kf.cancelDownloadTask()
+        layers.forEach { $0.removeFromSuperlayer() }
+    }
+    
+    func configCell(
+        with photo: Photo,
+        _ completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        likeButton.imageView?.image = photo.isLiked ?
                                 UIImage(named: "active_like") :
                                 UIImage(named: "no_active_like")
-        dateLabel.text = dateFormatter.string(for: Date())
-        imageOfCell.image = cellImage
-        if bottomGradient.layer.sublayers == nil {
-            addBottomGradienLayer()
-        }
+        dateLabel.text = ImagesListCell.dateFormatter.string(for: photo.createdAt)
+        imageOfCell.kf.indicatorType = .activity
+        imageOfCell.kf.setImage(
+            with: URL(string: photo.smallImageURL),
+            placeholder: UIImage(named: "image_placeholder")) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(_):
+                    if bottomGradient.layer.sublayers == nil {
+                        addBottomGradienLayer()
+                    }
+                    let void: Void
+                    completion(.success(void))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let image = isLiked ? UIImage(named: "active_like") :
+                              UIImage(named: "no_active_like")
+        likeButton.setImage(image, for: .normal)
     }
     
     private func addBottomGradienLayer() {
@@ -81,13 +126,14 @@ final class ImagesListCell: UITableViewCell {
         ])
         layoutIfNeeded()
         let layerGradient = CAGradientLayer()
+        layers.insert(layerGradient)
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
-                                UIColor.ypBlack.withAlphaComponent(0.5).cgColor]
+                                UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
         layerGradient.frame = bottomGradient.bounds
         bottomGradient.layer.addSublayer(layerGradient)
     }
     
-    private func addImageOfCellAndBottomGradientView() {
+    private func addImageOfCellAndBottomGradientViews() {
         contentView.addSubview(imageOfCell)
         imageOfCell.addSubview(bottomGradient)
         NSLayoutConstraint.activate([
@@ -109,11 +155,17 @@ final class ImagesListCell: UITableViewCell {
     
     private func addLikeButton() {
         imageOfCell.addSubview(likeButton)
+        likeButton.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
         NSLayoutConstraint.activate([
             likeButton.widthAnchor.constraint(equalToConstant: 44),
             likeButton.heightAnchor.constraint(equalToConstant: 44),
             likeButton.topAnchor.constraint(equalTo: imageOfCell.topAnchor),
             likeButton.trailingAnchor.constraint(equalTo: imageOfCell.trailingAnchor)
         ])
+    }
+    
+    @objc private func likeButtonClicked() {
+        guard let delegate else { return }
+        delegate.imagesListCellDidTapLike(self)
     }
 }

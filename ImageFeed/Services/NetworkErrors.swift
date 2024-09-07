@@ -16,6 +16,7 @@ enum NetworkErrors: Error, LocalizedError {
     case urlRequestError(Error)
     case urlSessionError
     case invalidRequestError
+    case otherError(Error)
 
     var errorDescription: String? {
         switch self {
@@ -27,6 +28,8 @@ enum NetworkErrors: Error, LocalizedError {
             return "URLSession Error"
         case .invalidRequestError:
             return "Invalid Request Error"
+        case .otherError(let error):
+            return error.localizedDescription
         }
     }
     
@@ -34,9 +37,9 @@ enum NetworkErrors: Error, LocalizedError {
     
     static func logError(
         _ error: NetworkErrors,
-        file: String,
-        function: String = #function,
-        line: Int = #line
+        _ file: String,
+        _ function: String,
+        _ line: Int
     ) {
         print("""
             -------------
