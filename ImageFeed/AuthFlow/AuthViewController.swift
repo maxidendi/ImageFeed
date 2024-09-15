@@ -80,9 +80,12 @@ final class AuthViewController: UIViewController {
     
     @objc private func didTapEnterButton() {
         guard let nc = navigationController else { return }
-        let wv = WebViewViewController()
-        wv.delegate = self
-        nc.pushViewController(wv, animated: true)
+        let webViewPresenter = WebViewPresenter(authHelper: AuthHelper())
+        let webViewViewController = WebViewViewController()
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
+        webViewViewController.delegate = self
+        nc.pushViewController(webViewViewController, animated: true)
     }
     
     private func configureBackButton() {
