@@ -23,7 +23,8 @@ final class ImagesTabBarController: UITabBarController {
     //MARK: - Methods
     
     private func setTabBarControllers() {
-        let imagesListViewController = ImagesListViewController()
+        let presenter = ImagesListPresenter()
+        let imagesListViewController = ImagesListViewController(presenter: presenter)
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active"),

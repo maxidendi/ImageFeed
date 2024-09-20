@@ -7,7 +7,15 @@
 
 import UIKit
 
-final class AlertService {
+protocol AlertServiceProtocol {
+    func showNetworkAlert(on vc: UIViewController?, _ completion: (() -> Void)?)
+    
+    func showNetworkAlertWithRetry(on vc: UIViewController?, _ completion: @escaping () -> Void)
+    
+    func showSureToLogout(on vc: UIViewController?, _ completion: @escaping () -> Void)
+}
+
+final class AlertService: AlertServiceProtocol {
     
     //MARK: - Init
     
@@ -46,7 +54,7 @@ final class AlertService {
         return alert
     }
     
-    func showNetworkAlert(on vc: UIViewController, _ completion: (() -> Void)? = nil) {
+    func showNetworkAlert(on vc: UIViewController?, _ completion: (() -> Void)?) {
         let button = AlertButton(
             title: "OK",
             completion: completion)
@@ -54,10 +62,10 @@ final class AlertService {
             title: "Что-то пошло не так",
             message: "Не удалось войти в систему(",
             buttons: [button])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
     
-    func showNetworkAlertWithRetry(on vc: UIViewController, _ completion: @escaping () -> Void) {
+    func showNetworkAlertWithRetry(on vc: UIViewController?, _ completion: @escaping () -> Void) {
         let firstButton = AlertButton(
             title: "Не надо")
         let secondButton = AlertButton(
@@ -67,10 +75,10 @@ final class AlertService {
             title: "Что-то пошло не так",
             message: "Попробовать еще раз?",
             buttons: [firstButton, secondButton])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
     
-    func showSureToLogout(on vc: UIViewController, _ completion: @escaping () -> Void) {
+    func showSureToLogout(on vc: UIViewController?, _ completion: @escaping () -> Void) {
         let firstButton = AlertButton(
             title: "Да",
             completion: completion)
@@ -80,6 +88,6 @@ final class AlertService {
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
             buttons: [firstButton, secondButton])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
 }

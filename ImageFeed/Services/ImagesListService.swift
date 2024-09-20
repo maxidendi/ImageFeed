@@ -8,7 +8,17 @@
 import Foundation
 import SwiftKeychainWrapper
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var photosProvider: [Photo] { get set }
+    
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void)
+    func changeLike(
+        index: Int,
+        isLike: Bool,
+        _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     
     //MARK: - Singletone
 
@@ -27,7 +37,7 @@ final class ImagesListService {
         qos: .userInteractive,
         attributes: .concurrent)
     
-    private(set) var photosProvider: [Photo] {
+    var photosProvider: [Photo] {
         get {
             queue.sync {
                 photos
@@ -57,6 +67,8 @@ final class ImagesListService {
         likeTask?.cancel()
     }
     
+    //Make requests
+    
     private func makePhotosNextPageRequest(token: String, page: Int) -> URLRequest? {
         var urlComponents = URLComponents(
             string: Constants.defaultBaseURLString + "/photos")
@@ -83,6 +95,8 @@ final class ImagesListService {
         request.httpMethod = isLike ? "POST" : "DELETE"
         return request
     }
+    
+    //Fetching photos and changing likes
     
     func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
         guard Thread.isMainThread 

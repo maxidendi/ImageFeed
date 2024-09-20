@@ -117,7 +117,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     OAuth2KeychainTokenStorage.shared.token = token
                     delegate?.didAuthenticate(self, with: token)
                 case .failure(_):
-                    alertPresenter.showNetworkAlert(on: self)
+                    alertPresenter.showNetworkAlert(on: self, nil)
                 }
             }
         }

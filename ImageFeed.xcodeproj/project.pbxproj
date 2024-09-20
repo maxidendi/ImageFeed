@@ -41,6 +41,7 @@
 		3FF83B802C3666C4001ED6D0 /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF83B7F2C3666C4001ED6D0 /* ImagesListViewController.swift */; };
 		3FF83B852C3666C5001ED6D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B842C3666C5001ED6D0 /* Assets.xcassets */; };
 		3FF83B882C3666C5001ED6D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B872C3666C5001ED6D0 /* Base */; };
+		3FF8A5AA2C9B39FE00978246 /* ImagesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5A92C9B39FE00978246 /* ImagesListPresenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		3FF83B842C3666C5001ED6D0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3FF83B872C3666C5001ED6D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3FF83B892C3666C5001ED6D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3FF8A5A92C9B39FE00978246 /* ImagesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPresenter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,14 +134,12 @@
 		3F387A5B2C553E99009FA802 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				3F387A5C2C555573009FA802 /* OAuth2Service.swift */,
 				3F93977B2C804181004864BD /* ImagesListService.swift */,
 				3FC17B272C65315C005DC458 /* ProfileService.swift */,
 				3FC17B2C2C6624A5005DC458 /* ProfileImageService.swift */,
 				3F93978D2C859CAD004864BD /* ProfileLogoutService.swift */,
+				3F387A5C2C555573009FA802 /* OAuth2Service.swift */,
 				3F93978F2C85C4D3004864BD /* AlertService.swift */,
-				3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */,
-				3FC17B2E2C69D18E005DC458 /* NetworkErrors.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -151,6 +151,8 @@
 				3FC6AD9C2C9757DA005D4A49 /* AuthHelper.swift */,
 				3F387A5F2C55FFD5009FA802 /* URLSession+data.swift */,
 				3F387A632C561167009FA802 /* OAuth2KeychainTokenStorage.swift */,
+				3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */,
+				3FC17B2E2C69D18E005DC458 /* NetworkErrors.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -168,6 +170,7 @@
 			children = (
 				3FF83B7F2C3666C4001ED6D0 /* ImagesListViewController.swift */,
 				3F61F4E62C385C96008347C1 /* ImagesListCell.swift */,
+				3FF8A5A92C9B39FE00978246 /* ImagesListPresenter.swift */,
 			);
 			path = ImagesList;
 			sourceTree = "<group>";
@@ -391,6 +394,7 @@
 				3FC17B2B2C65E70C005DC458 /* ProfileModels.swift in Sources */,
 				3FC78B492C64E151009606A8 /* UIBlockingProgressHUD.swift in Sources */,
 				3FC17B2F2C69D18E005DC458 /* NetworkErrors.swift in Sources */,
+				3FF8A5AA2C9B39FE00978246 /* ImagesListPresenter.swift in Sources */,
 				3F139D732C3E68AC00986505 /* SingleImageViewController.swift in Sources */,
 				3FC17B382C6A8952005DC458 /* ImagesTabBarController.swift in Sources */,
 				3F387A602C55FFD5009FA802 /* URLSession+data.swift in Sources */,
