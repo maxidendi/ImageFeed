@@ -9,19 +9,40 @@ import UIKit
 import Kingfisher
 import SwiftKeychainWrapper
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    init(presenter: ProfilePresenterProtocol)
+    var presenter: ProfilePresenterProtocol { get set }
+    
+    func updateProfileDetails(profile: Profile)
+    func updateAvatar(data: Data)
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    
+    //MARK: - Init
+    
+    init(presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: - Properties
     
-    private let profile = ProfileService.shared.profile
+    var presenter: ProfilePresenterProtocol
     
     private let alertPresenter = AlertService.shared
-    
-    private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var photoImageView: UIImageView = {
         let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        photoImageView.contentMode = .scaleAspectFill
+        photoImageView.layer.cornerRadius = 35
+        photoImageView.layer.masksToBounds = true
+        photoImageView.layer.backgroundColor = UIColor.ypBlack.cgColor
         return photoImageView
     } ()
 
@@ -40,7 +61,6 @@ final class ProfileViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = .white
-        nameLabel.text = "Екатерина Новикова"
         return nameLabel
     } ()
     
@@ -49,7 +69,6 @@ final class ProfileViewController: UIViewController {
         loginLabel.translatesAutoresizingMaskIntoConstraints = false
         loginLabel.font = UIFont.systemFont(ofSize: 13)
         loginLabel.textColor = .ypGray
-        loginLabel.text = "@ekaterina_nov"
         return loginLabel
     } ()
     
@@ -58,7 +77,6 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .white
-        descriptionLabel.text = "Hello, world!"
         return descriptionLabel
     } ()
         
@@ -72,18 +90,8 @@ final class ProfileViewController: UIViewController {
         addNameLabel()
         addLoginLabel()
         addDescriptionLabel()
-        
-        guard let profile else { return }
-        updateProfileDetails(profile: profile)
-        
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.didChangeNotification,
-            object: nil,
-            queue: .main) { [weak self] _ in
-                guard let self else { return }
-                updateAvatar()
-            }
-        updateAvatar()
+        configure(presenter)
+        presenter.viewDidLoad()
     }
 
     //MARK: - Methods
@@ -137,39 +145,24 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateProfileDetails(profile: Profile) {
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        presenter.view = self
+    }
+    
+    func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
     }
     
-    private func updateAvatar() {
-        guard let profileImageURL = ProfileImageService.shared.avatarURL,
-              let url = URL(string: profileImageURL) else { return }
-        let processor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: .ypBlack)
-        photoImageView.kf.indicatorType = .activity
-        photoImageView.kf.setImage(
-            with: url,
-            placeholder: UIImage(named: "user_avatar_placeholder"),
-            options: [.processor(processor)]
-        )
+    func updateAvatar(data: Data) {
+        photoImageView.image = UIImage(data: data)
     }
     
     @objc private func didTapLogoutButton() {
         alertPresenter.showSureToLogout(on: self) { [weak self] in
             guard let self else { return }
-            logoutProfile()
+            presenter.logoutProfile()
         }
-    }
-    
-    private func logoutProfile() {
-        ProfileLogoutService.shared.logout()
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = scene.windows.first
-         else {
-            assertionFailure("Invalid window configuration")
-            return
-        }
-        window.rootViewController = SplashViewController()
     }
 }

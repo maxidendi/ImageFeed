@@ -20,6 +20,10 @@ final class ProfileLogoutService {
     
     func logout() {
         cleanCookies()
+        KeychainWrapper.standard.removeAllKeys()
+        ProfileService.shared.cleanProfile()
+        ProfileImageService.shared.cleanProfileImage()
+        ImagesListService.shared.cleanImagesList()
     }
     
     private func cleanCookies() {
@@ -33,9 +37,5 @@ final class ProfileLogoutService {
                     completionHandler: {})
             }
         }
-        KeychainWrapper.standard.removeAllKeys()
-        ProfileService.shared.cleanProfile()
-        ProfileImageService.shared.cleanProfileImage()
-        ImagesListService.shared.cleanImagesList()
     }
 }

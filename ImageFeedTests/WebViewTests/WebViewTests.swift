@@ -21,7 +21,7 @@ final class WebViewTests: XCTestCase {
         _ = viewController.view
         
         //then
-        XCTAssertTrue(presenter.viewDidLoadCalled) // behaviour verification
+        XCTAssertTrue(presenter.viewDidLoadCalled)
     }
     
     func testPresenterCallsLoadRequest() {

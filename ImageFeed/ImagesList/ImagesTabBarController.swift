@@ -23,15 +23,17 @@ final class ImagesTabBarController: UITabBarController {
     //MARK: - Methods
     
     private func setTabBarControllers() {
-        let presenter = ImagesListPresenter(
+        let presenterImagesList = ImagesListPresenter(
             imagesListService: ImagesListService.shared,
             alertPresenter: AlertService.shared)
-        let imagesListViewController = ImagesListViewController(presenter: presenter)
+        let imagesListViewController = ImagesListViewController(presenter: presenterImagesList)
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil)
-        let profileViewController = ProfileViewController()
+        
+        let presenterProfile = ProfilePresenter()
+        let profileViewController = ProfileViewController(presenter: presenterProfile)
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_profile_active"),
