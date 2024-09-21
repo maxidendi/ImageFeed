@@ -31,9 +31,7 @@ final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
     weak var delegate: ImagesListCellDelegate?
-    
-    private let alertPresented = AlertService.shared
-    
+        
     private var layers: Set<CALayer> = []
     
     static private let dateFormatter: DateFormatter = {
@@ -78,7 +76,7 @@ final class ImagesListCell: UITableViewCell {
     
     //MARK: - Methods
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         imageOfCell.kf.cancelDownloadTask()
         layers.forEach { $0.removeFromSuperlayer() }

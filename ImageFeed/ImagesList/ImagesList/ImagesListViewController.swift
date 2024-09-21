@@ -11,6 +11,10 @@ protocol ImagesListViewControllerProtocol: UIViewController {
     init (presenter: ImagesListPresenterProtocol)
     var presenter: ImagesListPresenterProtocol { get set }
     var tableView: UITableView { get set }
+    
+    func configure(_ presenter: ImagesListPresenterProtocol)
+    func setIsliked(cellIndex: IndexPath, isLiked: Bool)
+    func updateTableViewAnimated(oldCount: Int, newCount: Int)
 }
 
 protocol ImagesListCellDelegate: AnyObject {
@@ -19,10 +23,10 @@ protocol ImagesListCellDelegate: AnyObject {
 
 final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
     
-    init(presenter: ImagesListPresenterProtocol) {
+    init(presenter: ImagesListPresenterProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        presenter.view = self
     }
     
     required init?(coder: NSCoder) {
@@ -41,9 +45,6 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .ypBlack
         tableView.separatorStyle = .none
-        tableView.register(
-            ImagesListCell.self,
-            forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
         return tableView
     } ()
     
@@ -52,6 +53,9 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         addTableView()
+        tableView.register(
+            ImagesListCell.self,
+            forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.contentInset = UIEdgeInsets(
@@ -59,10 +63,31 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
             left: 0,
             bottom: 12,
             right: 0)
+        configure(presenter)
         presenter.viewDidLoad()
     }
     
     //MARK: - Methods
+    
+    func configure(_ presenter: ImagesListPresenterProtocol) {
+        presenter.view = self
+    }
+    
+    func setIsliked(cellIndex: IndexPath, isLiked: Bool) {
+        guard let cell = tableView.cellForRow(at: cellIndex),
+              let imagesListCell = cell as? ImagesListCell
+        else { return }
+        imagesListCell.setIsLiked(isLiked)
+    }
+
+    func updateTableViewAnimated(oldCount: Int, newCount: Int) {
+        tableView.performBatchUpdates {
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0)
+                }
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        }
+    }
     
     private func addTableView() {
         view.addSubview(tableView)
@@ -88,8 +113,9 @@ extension ImagesListViewController: UITableViewDataSource {
             withIdentifier: ImagesListCell.reuseIdentifier,
             for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
-        imageListCell.delegate = self
-        return presenter.config(cell: imageListCell, forRowAt: indexPath)
+        let configuredCell = presenter.config(cell: imageListCell, forRowAt: indexPath)
+        configuredCell.delegate = self
+        return configuredCell
     }
 }
 
@@ -108,12 +134,18 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        presenter.heightForRow(at: indexPath, width: tableView.bounds.size.width)
+        let insetX: CGFloat = 16
+        let insetY: CGFloat = 4
+        return presenter.heightForRow(
+            at: indexPath,
+            insets: CGSize(width: insetX, height: insetY),
+            width: tableView.bounds.width)
     }
 }
 
 extension ImagesListViewController: ImagesListCellDelegate {
     func imagesListCellDidTapLike(_ cell: ImagesListCell) {
-        presenter.viewCellDidTapLike(cell)
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        presenter.viewCellDidTapLike(indexPath: indexPath)
     }
 }

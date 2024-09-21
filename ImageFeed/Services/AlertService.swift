@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol AlertServiceProtocol {
+public protocol AlertServiceProtocol {
     func showNetworkAlert(on vc: UIViewController?, _ completion: (() -> Void)?)
     
     func showNetworkAlertWithRetry(on vc: UIViewController?, _ completion: @escaping () -> Void)

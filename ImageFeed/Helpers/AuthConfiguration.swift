@@ -7,7 +7,9 @@
 
 import Foundation
 
-enum Constants {
+//MARK: - Constants
+
+public enum Constants {
     static let accessKey = "Xm9yREJzofNOp4fxpYuONdi-7ZwiTh-2r-VVZcV_XrM"
     static let secretKey = "xP9jWM24Ig4-ODmcqEIAmJmz5830HCeKjqLrsZtU5m4"
     static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
@@ -17,6 +19,8 @@ enum Constants {
     static let decoder = JSONDecoder()
     static let dateFormatter = ISO8601DateFormatter()
 }
+
+//MARK: - Auth Configuration
 
 struct AuthConfiguration {
     

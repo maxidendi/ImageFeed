@@ -23,7 +23,9 @@ final class ImagesTabBarController: UITabBarController {
     //MARK: - Methods
     
     private func setTabBarControllers() {
-        let presenter = ImagesListPresenter()
+        let presenter = ImagesListPresenter(
+            imagesListService: ImagesListService.shared,
+            alertPresenter: AlertService.shared)
         let imagesListViewController = ImagesListViewController(presenter: presenter)
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",

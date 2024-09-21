@@ -42,6 +42,10 @@
 		3FF83B852C3666C5001ED6D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B842C3666C5001ED6D0 /* Assets.xcassets */; };
 		3FF83B882C3666C5001ED6D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 3FF83B872C3666C5001ED6D0 /* Base */; };
 		3FF8A5AA2C9B39FE00978246 /* ImagesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5A92C9B39FE00978246 /* ImagesListPresenter.swift */; };
+		3FF8A5AE2C9D6F7100978246 /* ImagesListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5AD2C9D6F7100978246 /* ImagesListTests.swift */; };
+		3FF8A5B02C9D70E800978246 /* ImagesListPresenterSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5AF2C9D70E800978246 /* ImagesListPresenterSpy.swift */; };
+		3FF8A5B22C9D79B900978246 /* ImagesListViewControllerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5B12C9D79B900978246 /* ImagesListViewControllerSpy.swift */; };
+		3FF8A5B42C9DDA6000978246 /* ImagesListServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF8A5B32C9DDA6000978246 /* ImagesListServiceStub.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +94,10 @@
 		3FF83B872C3666C5001ED6D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3FF83B892C3666C5001ED6D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3FF8A5A92C9B39FE00978246 /* ImagesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPresenter.swift; sourceTree = "<group>"; };
+		3FF8A5AD2C9D6F7100978246 /* ImagesListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListTests.swift; sourceTree = "<group>"; };
+		3FF8A5AF2C9D70E800978246 /* ImagesListPresenterSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPresenterSpy.swift; sourceTree = "<group>"; };
+		3FF8A5B12C9D79B900978246 /* ImagesListViewControllerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListViewControllerSpy.swift; sourceTree = "<group>"; };
+		3FF8A5B32C9DDA6000978246 /* ImagesListServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListServiceStub.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +207,7 @@
 		3FC6ADA32C983C14005D4A49 /* ImageFeedTests */ = {
 			isa = PBXGroup;
 			children = (
+				3FF8A5AC2C9D6F1D00978246 /* ImagesListTests */,
 				3FC6ADAB2C983CED005D4A49 /* WebViewTests */,
 			);
 			path = ImageFeedTests;
@@ -256,6 +265,17 @@
 				3FF83B892C3666C5001ED6D0 /* Info.plist */,
 			);
 			path = ImageFeed;
+			sourceTree = "<group>";
+		};
+		3FF8A5AC2C9D6F1D00978246 /* ImagesListTests */ = {
+			isa = PBXGroup;
+			children = (
+				3FF8A5AD2C9D6F7100978246 /* ImagesListTests.swift */,
+				3FF8A5AF2C9D70E800978246 /* ImagesListPresenterSpy.swift */,
+				3FF8A5B12C9D79B900978246 /* ImagesListViewControllerSpy.swift */,
+				3FF8A5B32C9DDA6000978246 /* ImagesListServiceStub.swift */,
+			);
+			path = ImagesListTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -369,7 +389,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				3FC6ADA52C983C14005D4A49 /* WebViewTests.swift in Sources */,
+				3FF8A5B22C9D79B900978246 /* ImagesListViewControllerSpy.swift in Sources */,
+				3FF8A5AE2C9D6F7100978246 /* ImagesListTests.swift in Sources */,
+				3FF8A5B02C9D70E800978246 /* ImagesListPresenterSpy.swift in Sources */,
 				3FC6ADAF2C984070005D4A49 /* WebViewViewControllerSpy.swift in Sources */,
+				3FF8A5B42C9DDA6000978246 /* ImagesListServiceStub.swift in Sources */,
 				3FC6ADAD2C983D2C005D4A49 /* WebViewPresenterSpy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

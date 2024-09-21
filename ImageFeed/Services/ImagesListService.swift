@@ -8,7 +8,7 @@
 import Foundation
 import SwiftKeychainWrapper
 
-protocol ImagesListServiceProtocol {
+public protocol ImagesListServiceProtocol {
     var photosProvider: [Photo] { get set }
     
     func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void)
@@ -122,7 +122,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             }
             switch result {
             case .success(let photosResult):
-                let newPhotos = photosResult.map{ Photo(photoResult: $0) }
+                let newPhotos = photosResult.map{ Photo(from: $0) }
                 photosProvider.append(contentsOf: newPhotos)
                 lastLoadedPage += 1
                 NotificationCenter.default.post(
@@ -168,7 +168,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             }
             switch result {
             case .success(let likedPhoto):
-                photosProvider[index].photoResult.likedByUser = likedPhoto.photo.likedByUser
+                photosProvider[index].isLiked = likedPhoto.photo.likedByUser
                 let void: Void
                 completion(.success(void))
             case .failure(let error):

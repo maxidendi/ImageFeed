@@ -8,6 +8,8 @@
 import Foundation
 
 protocol ImagesListPresenterProtocol: AnyObject {
+    init(imagesListService: ImagesListServiceProtocol,
+         alertPresenter: AlertServiceProtocol)
     var view: ImagesListViewControllerProtocol? { get set }
     var photos: [Photo] { get }
     
@@ -16,16 +18,16 @@ protocol ImagesListPresenterProtocol: AnyObject {
     func config(cell: ImagesListCell, forRowAt indexPath: IndexPath) -> ImagesListCell
     func tableViewWillDisplayRow(at: IndexPath)
     func tableViewDidSelectRow(at indexPath: IndexPath)
-    func heightForRow(at indexPath: IndexPath, width: CGFloat) -> CGFloat
-    func viewCellDidTapLike(_ cell: ImagesListCell)
+    func heightForRow(at indexPath: IndexPath, insets: CGSize, width: CGFloat) -> CGFloat
+    func viewCellDidTapLike(indexPath: IndexPath)
 }
 
 final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     //MARK: - Init
     
-    init(imagesListService: ImagesListServiceProtocol = ImagesListService.shared,
-         alertPresenter: AlertServiceProtocol = AlertService.shared
+    init(imagesListService: ImagesListServiceProtocol,
+         alertPresenter: AlertServiceProtocol
     ) {
         self.imagesListService = imagesListService
         self.alertPresenter = alertPresenter
@@ -75,12 +77,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         let newPhotosCount = imagesListService.photosProvider.count
         photos = imagesListService.photosProvider
         if oldPhotosCount != newPhotosCount {
-            view?.tableView.performBatchUpdates {
-                let indexPaths = (oldPhotosCount..<newPhotosCount).map { i in
-                    IndexPath(row: i, section: 0)
-                    }
-                view?.tableView.insertRows(at: indexPaths, with: .automatic)
-            }
+            view?.updateTableViewAnimated(oldCount: oldPhotosCount, newCount: newPhotosCount)
         }
     }
 }
@@ -114,27 +111,25 @@ extension ImagesListPresenter {
         view?.present(singleImageViewController, animated: true)
     }
     
-    func heightForRow(at indexPath: IndexPath, width: CGFloat) -> CGFloat {
+    func heightForRow(at indexPath: IndexPath, insets: CGSize, width: CGFloat) -> CGFloat {
         let image = photos[indexPath.row]
-        let imageViewWidth = width - 32
+        let imageViewWidth = width - insets.width * 2
         let scale = imageViewWidth / image.size.width
-        let cellHeith = image.size.height * scale + 8
+        let cellHeith = image.size.height * scale + insets.height * 2
         return cellHeith
     }
     
-    func viewCellDidTapLike(_ cell: ImagesListCell) {
-        guard let indexPath = view?.tableView.indexPath(for: cell) else { return }
-        let photo = photos[indexPath.row]
+    func viewCellDidTapLike(indexPath: IndexPath) {
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(
             index: indexPath.row,
-            isLike: !photo.isLiked) { [weak self] result in
+            isLike: !photos[indexPath.row].isLiked) { [weak self] result in
                 UIBlockingProgressHUD.dismiss()
                 guard let self else { return }
                 switch result {
                 case .success():
                     photos = imagesListService.photosProvider
-                    cell.setIsLiked(photos[indexPath.row].isLiked)
+                    view?.setIsliked(cellIndex: indexPath, isLiked: photos[indexPath.row].isLiked)
                 case .failure(_):
                     alertPresenter.showNetworkAlert(on: view, nil)
                 }
