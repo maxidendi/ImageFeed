@@ -8,7 +8,7 @@
 import UIKit
 import ProgressHUD
 
-final class UIBlockingProgressHUD {
+final class UIProgressHUD {
     
     //MARK: - Properties
     
@@ -19,13 +19,21 @@ final class UIBlockingProgressHUD {
     
     //MARK: - Methods
     
-    static func show() {
+    static func blockingShow() {
         window?.isUserInteractionEnabled = false
         ProgressHUD.animate()
     }
     
-    static func dismiss() {
+    static func blockingDismiss() {
         window?.isUserInteractionEnabled = true
+        ProgressHUD.dismiss()
+    }
+    
+    static func show() {
+        ProgressHUD.animate()
+    }
+    
+    static func dismiss() {
         ProgressHUD.dismiss()
     }
 }

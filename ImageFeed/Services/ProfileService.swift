@@ -7,7 +7,16 @@
 
 import Foundation
 
-final class ProfileService {
+protocol ProfileServiceProtocol {
+    var profile: Profile? { get }
+    
+    func cleanProfile()
+    func fetchProfile(
+        token: String,
+        completion: @escaping (Result<Profile, Error>) -> Void)
+}
+
+final class ProfileService: ProfileServiceProtocol {
     
     //MARK: - Singletone
 
@@ -34,7 +43,7 @@ final class ProfileService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -66,9 +75,9 @@ final class ProfileService {
             }
             switch result {
             case .success(let profileResult):
-                    let profile = Profile(profileResult: profileResult)
-                    self.profile = profile
-                    completion(.success(profile))
+                let profile = Profile(from: profileResult)
+                self.profile = profile
+                completion(.success(profile))
             case .failure(let error):
                 NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))

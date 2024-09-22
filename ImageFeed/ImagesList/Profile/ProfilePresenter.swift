@@ -15,9 +15,21 @@ protocol ProfilePresenterProtocol: AnyObject {
     func updateViewWith(profile: Profile)
     func updateViewAvatar()
     func logoutProfile()
+    func viewDidTapLogoutButton()
 }
 
 final class ProfilePresenter: ProfilePresenterProtocol {
+    
+    //MARK: - Init
+    
+    init(imageLoader: ProfileImageLoaderProtocol,
+         profile: ProfileServiceProtocol = ProfileService.shared,
+         profileImageService: ProfileImageServiceProtocol = ProfileImageService.shared
+    ) {
+        self.imageloader = imageLoader
+        self.profileService = profile
+        self.profileImageService = profileImageService
+    }
     
     //MARK: - Properties
     
@@ -25,14 +37,18 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    private let profile = ProfileService.shared.profile
+    private let profileService: ProfileServiceProtocol
     
-    private let profileImageService = ProfileImageService.shared
+    private let profileImageService: ProfileImageServiceProtocol
+    
+    private let alertPresenter = AlertService.shared
+    
+    private let imageloader: ProfileImageLoaderProtocol
     
     //MARK: - Methods
     
     func viewDidLoad() {
-        guard let profile else { return }
+        guard let profile = profileService.profile else { return }
         updateViewWith(profile: profile)
         
         profileImageServiceObserver = NotificationCenter.default.addObserver(
@@ -50,17 +66,23 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     func updateViewAvatar() {
-        guard let profileImageURL = ProfileImageService.shared.avatarURL,
+        guard let profileImageURL = profileImageService.avatarURL,
               let url = URL(string: profileImageURL) else { return }
-        ImageDownloader.default.downloadImage(with: url) { [weak self] result in
+        imageloader.loadImage(from: url) { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success(let image):
-                let avatarData = image.originalData
-                view?.updateAvatar(data: avatarData)
+            case .success(let data):
+                view?.updateAvatar(data: data)
             case .failure:
                 break
             }
+        }
+    }
+    
+    func viewDidTapLogoutButton() {
+        alertPresenter.showSureToLogout(on: view) { [weak self] in
+            guard let self else { return }
+            logoutProfile()
         }
     }
     

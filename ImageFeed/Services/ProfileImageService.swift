@@ -7,7 +7,17 @@
 
 import Foundation
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol {
+    var avatarURL: String? { get }
+    
+    func cleanProfileImage()
+    func fetchProfileImageURL(
+        username: String,
+        token: String,
+        completion: @escaping (Result<String, Error>) -> Void)
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     
     //MARK: - Singletone
 
@@ -36,7 +46,7 @@ final class ProfileImageService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request

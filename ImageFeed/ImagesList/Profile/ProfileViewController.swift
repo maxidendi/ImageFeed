@@ -9,11 +9,13 @@ import UIKit
 import Kingfisher
 import SwiftKeychainWrapper
 
-protocol ProfileViewControllerProtocol: AnyObject {
+protocol ProfileViewControllerProtocol: UIViewController {
     init(presenter: ProfilePresenterProtocol)
     var presenter: ProfilePresenterProtocol { get set }
     
+    func configure(_ presenter: ProfilePresenterProtocol)
     func updateProfileDetails(profile: Profile)
+    func actualProfileDetails() -> (name: String?, login: String?, description: String?)
     func updateAvatar(data: Data)
 }
 
@@ -33,8 +35,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     //MARK: - Properties
     
     var presenter: ProfilePresenterProtocol
-    
-    private let alertPresenter = AlertService.shared
     
     private lazy var photoImageView: UIImageView = {
         let photoImageView = UIImageView(image: UIImage(named: "user_avatar_placeholder"))
@@ -155,14 +155,15 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         descriptionLabel.text = profile.bio
     }
     
+    func actualProfileDetails() -> (name: String?, login: String?, description: String?) {
+        return (nameLabel.text, loginLabel.text, descriptionLabel.text)
+    }
+    
     func updateAvatar(data: Data) {
         photoImageView.image = UIImage(data: data)
     }
     
     @objc private func didTapLogoutButton() {
-        alertPresenter.showSureToLogout(on: self) { [weak self] in
-            guard let self else { return }
-            presenter.logoutProfile()
-        }
+        presenter.viewDidTapLogoutButton()
     }
 }

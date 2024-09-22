@@ -107,10 +107,10 @@ extension AuthViewController: WebViewViewControllerDelegate {
         didAuthenticateWithCode code: String
     ) {        
         navigationController?.popToRootViewController(animated: true)
-        UIBlockingProgressHUD.show()
+        UIProgressHUD.blockingShow()
         DispatchQueue.global().async {
             OAuth2Service.shared.fetchOAuthToken(withCode: code) { [weak self] result in
-                UIBlockingProgressHUD.dismiss()
+                UIProgressHUD.blockingDismiss()
                 guard let self else { return }
                 switch result {
                 case .success(let token):

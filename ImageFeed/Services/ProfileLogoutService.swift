@@ -5,7 +5,7 @@
 //  Created by Денис Максимов on 02.09.2024.
 //
 
-import Foundation
+import UIKit
 import WebKit
 import SwiftKeychainWrapper
 

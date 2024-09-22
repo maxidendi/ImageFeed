@@ -59,7 +59,9 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func fetchPhotoNextPage() {
+        UIProgressHUD.show()
         imagesListService.fetchPhotosNextPage() { [weak self] result in
+            UIProgressHUD.dismiss()
             guard let self else { return }
             switch result {
             case .success():
@@ -120,11 +122,11 @@ extension ImagesListPresenter {
     }
     
     func viewCellDidTapLike(indexPath: IndexPath) {
-        UIBlockingProgressHUD.show()
+        UIProgressHUD.blockingShow()
         imagesListService.changeLike(
             index: indexPath.row,
             isLike: !photos[indexPath.row].isLiked) { [weak self] result in
-                UIBlockingProgressHUD.dismiss()
+                UIProgressHUD.blockingDismiss()
                 guard let self else { return }
                 switch result {
                 case .success():

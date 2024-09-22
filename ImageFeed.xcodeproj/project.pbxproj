@@ -34,6 +34,11 @@
 		3FC78B492C64E151009606A8 /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */; };
 		3FC98F122C9F440100BCA644 /* ProfileViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F112C9F440100BCA644 /* ProfileViewControllerTests.swift */; };
 		3FC98F142C9F44C300BCA644 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F132C9F44C300BCA644 /* ProfilePresenter.swift */; };
+		3FC98F162C9FF04700BCA644 /* ProfileImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F152C9FF03A00BCA644 /* ProfileImageLoader.swift */; };
+		3FC98F182CA02B7A00BCA644 /* ProfilePresenterSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F172CA02B7A00BCA644 /* ProfilePresenterSpy.swift */; };
+		3FC98F1A2CA0344500BCA644 /* ProfileImageLoaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F192CA0344100BCA644 /* ProfileImageLoaderStub.swift */; };
+		3FC98F1E2CA0384C00BCA644 /* ProfileImageServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F1D2CA0384C00BCA644 /* ProfileImageServiceStub.swift */; };
+		3FC98F202CA05CF800BCA644 /* ProfileViewControllerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC98F1F2CA05CF800BCA644 /* ProfileViewControllerSpy.swift */; };
 		3FD864742C6E802F00CEFED4 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 3FD864732C6E802F00CEFED4 /* ProgressHUD */; };
 		3FDAC5F02C52A99D00C52543 /* AuthConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDAC5EF2C52A99D00C52543 /* AuthConfiguration.swift */; };
 		3FDBBADC2C3D03AC00B40B32 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDBBADB2C3D03AC00B40B32 /* ProfileViewController.swift */; };
@@ -88,6 +93,11 @@
 		3FC78B482C64E151009606A8 /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
 		3FC98F112C9F440100BCA644 /* ProfileViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewControllerTests.swift; sourceTree = "<group>"; };
 		3FC98F132C9F44C300BCA644 /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
+		3FC98F152C9FF03A00BCA644 /* ProfileImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageLoader.swift; sourceTree = "<group>"; };
+		3FC98F172CA02B7A00BCA644 /* ProfilePresenterSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenterSpy.swift; sourceTree = "<group>"; };
+		3FC98F192CA0344100BCA644 /* ProfileImageLoaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageLoaderStub.swift; sourceTree = "<group>"; };
+		3FC98F1D2CA0384C00BCA644 /* ProfileImageServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageServiceStub.swift; sourceTree = "<group>"; };
+		3FC98F1F2CA05CF800BCA644 /* ProfileViewControllerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewControllerSpy.swift; sourceTree = "<group>"; };
 		3FDAC5EF2C52A99D00C52543 /* AuthConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthConfiguration.swift; sourceTree = "<group>"; };
 		3FDBBADB2C3D03AC00B40B32 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		3FF83B782C3666C4001ED6D0 /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +170,7 @@
 		3F387A5E2C55FFB8009FA802 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3FC98F152C9FF03A00BCA644 /* ProfileImageLoader.swift */,
 				3FDAC5EF2C52A99D00C52543 /* AuthConfiguration.swift */,
 				3FC6AD9C2C9757DA005D4A49 /* AuthHelper.swift */,
 				3F387A5F2C55FFD5009FA802 /* URLSession+data.swift */,
@@ -241,6 +252,10 @@
 			isa = PBXGroup;
 			children = (
 				3FC98F112C9F440100BCA644 /* ProfileViewControllerTests.swift */,
+				3FC98F172CA02B7A00BCA644 /* ProfilePresenterSpy.swift */,
+				3FC98F1F2CA05CF800BCA644 /* ProfileViewControllerSpy.swift */,
+				3FC98F192CA0344100BCA644 /* ProfileImageLoaderStub.swift */,
+				3FC98F1D2CA0384C00BCA644 /* ProfileImageServiceStub.swift */,
 			);
 			path = ProfileViewControllerTests;
 			sourceTree = "<group>";
@@ -406,7 +421,11 @@
 				3FF8A5B22C9D79B900978246 /* ImagesListViewControllerSpy.swift in Sources */,
 				3FF8A5AE2C9D6F7100978246 /* ImagesListTests.swift in Sources */,
 				3FF8A5B02C9D70E800978246 /* ImagesListPresenterSpy.swift in Sources */,
+				3FC98F1E2CA0384C00BCA644 /* ProfileImageServiceStub.swift in Sources */,
+				3FC98F202CA05CF800BCA644 /* ProfileViewControllerSpy.swift in Sources */,
 				3FC6ADAF2C984070005D4A49 /* WebViewViewControllerSpy.swift in Sources */,
+				3FC98F182CA02B7A00BCA644 /* ProfilePresenterSpy.swift in Sources */,
+				3FC98F1A2CA0344500BCA644 /* ProfileImageLoaderStub.swift in Sources */,
 				3FC98F122C9F440100BCA644 /* ProfileViewControllerTests.swift in Sources */,
 				3FF8A5B42C9DDA6000978246 /* ImagesListServiceStub.swift in Sources */,
 				3FC6ADAD2C983D2C005D4A49 /* WebViewPresenterSpy.swift in Sources */,
@@ -421,6 +440,7 @@
 				3FC17B282C65315C005DC458 /* ProfileService.swift in Sources */,
 				3F93977A2C803C7A004864BD /* ImagesListModels.swift in Sources */,
 				3F61F4E72C385C96008347C1 /* ImagesListCell.swift in Sources */,
+				3FC98F162C9FF04700BCA644 /* ProfileImageLoader.swift in Sources */,
 				3F93978E2C859CAD004864BD /* ProfileLogoutService.swift in Sources */,
 				3F9228152C5757DA002728F2 /* SplashViewController.swift in Sources */,
 				3F387A622C5609A2009FA802 /* OAuthTokenResponseBody.swift in Sources */,

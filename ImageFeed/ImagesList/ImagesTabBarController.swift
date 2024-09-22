@@ -32,7 +32,7 @@ final class ImagesTabBarController: UITabBarController {
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil)
         
-        let presenterProfile = ProfilePresenter()
+        let presenterProfile = ProfilePresenter(imageLoader: ProfileImageLoader())
         let profileViewController = ProfileViewController(presenter: presenterProfile)
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
