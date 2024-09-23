@@ -21,6 +21,8 @@ public protocol ImagesListServiceProtocol {
 final class ImagesListService: ImagesListServiceProtocol {
     
     //MARK: - Singletone
+    
+    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
 
     static let shared = ImagesListService()
     
@@ -55,8 +57,6 @@ final class ImagesListService: ImagesListServiceProtocol {
     private var likeTask: URLSessionTask?
     
     private let keyChainStorage = OAuth2KeychainTokenStorage.shared
-    
-    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
     //MARK: - Methods
     

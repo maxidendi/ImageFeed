@@ -30,22 +30,13 @@ public struct UrlsResult: Codable {
 }
 
 public struct Photo {
-//    var photoResult: PhotoResult
-//    var id: String { photoResult.id }
-//    var size: CGSize { CGSize(width: photoResult.width, height: photoResult.height) }
-//    var createdAt: Date? { Constants.dateFormatter.date(from: photoResult.createdAt ?? "") }
-//    var welcomeDescription: String? { photoResult.description }
-//    var thumbImageURL: String { photoResult.urls.thumb }
-//    var smallImageURL: String { photoResult.urls.small }
-//    var largeImageURL: String { photoResult.urls.full }
-//    var isLiked: Bool { photoResult.likedByUser }
-    var id: String
-    var size: CGSize
-    var createdAt: Date?
-    var welcomeDescription: String?
-    var thumbImageURL: String
-    var smallImageURL: String
-    var largeImageURL: String
+    let id: String
+    let size: CGSize
+    let createdAt: Date?
+    let welcomeDescription: String?
+    let thumbImageURL: URL?
+    let smallImageURL: URL?
+    let largeImageURL: URL?
     var isLiked: Bool
     
     init(from photoResult: PhotoResult) {
@@ -53,9 +44,9 @@ public struct Photo {
         self.size = CGSize(width: photoResult.width, height: photoResult.height)
         self.createdAt = Constants.dateFormatter.date(from: photoResult.createdAt ?? "")
         self.welcomeDescription = photoResult.description
-        self.thumbImageURL = photoResult.urls.thumb
-        self.smallImageURL = photoResult.urls.small
-        self.largeImageURL = photoResult.urls.full
+        self.thumbImageURL = URL(string: photoResult.urls.thumb)
+        self.smallImageURL = URL(string: photoResult.urls.small)
+        self.largeImageURL = URL(string: photoResult.urls.full)
         self.isLiked = photoResult.likedByUser
     }
 
@@ -72,9 +63,9 @@ public struct Photo {
         self.size = size
         self.createdAt = createdAt
         self.welcomeDescription = welcomeDescription
-        self.thumbImageURL = thumbImageURL
-        self.smallImageURL = smallImageURL
-        self.largeImageURL = largeImageURL
+        self.thumbImageURL = URL(string: thumbImageURL)
+        self.smallImageURL = URL(string: smallImageURL)
+        self.largeImageURL = URL(string: largeImageURL)
         self.isLiked = isLiked
     }
 }

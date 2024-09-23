@@ -49,6 +49,7 @@ final class SingleImageViewController: UIViewController {
         let backButton = UIButton(type: .custom)
         backButton.setImage(UIImage(named: "backward"), for: .normal)
         backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.accessibilityIdentifier = "navBackButton"
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         return backButton
     } ()
@@ -80,7 +81,7 @@ final class SingleImageViewController: UIViewController {
     private func setImage() {
         ProgressHUD.animate()
         imageView.kf.setImage(
-            with: URL(string: photo.largeImageURL)) { [weak self] result in
+            with: photo.largeImageURL) { [weak self] result in
                 ProgressHUD.dismiss()
                 guard let self else { return }
                 switch result {

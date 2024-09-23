@@ -43,7 +43,7 @@ final class AlertService: AlertServiceProtocol {
             title: model.title,
             message: model.message,
             preferredStyle: .alert)
-        
+        alert.view.accessibilityIdentifier = "alert"
         model.buttons.forEach { button in
             let action = UIAlertAction(
                 title: button.title,

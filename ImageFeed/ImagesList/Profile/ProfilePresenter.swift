@@ -66,8 +66,8 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     func updateViewAvatar() {
-        guard let profileImageURL = profileImageService.avatarURL,
-              let url = URL(string: profileImageURL) else { return }
+        guard let url = profileImageService.avatarURL
+        else { return }
         imageloader.loadImage(from: url) { [weak self] result in
             guard let self else { return }
             switch result {

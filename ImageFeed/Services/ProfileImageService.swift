@@ -8,13 +8,13 @@
 import Foundation
 
 protocol ProfileImageServiceProtocol {
-    var avatarURL: String? { get }
+    var avatarURL: URL? { get }
     
     func cleanProfileImage()
     func fetchProfileImageURL(
         username: String,
         token: String,
-        completion: @escaping (Result<String, Error>) -> Void)
+        completion: @escaping (Result<URL?, Error>) -> Void)
 }
 
 final class ProfileImageService: ProfileImageServiceProtocol {
@@ -29,7 +29,7 @@ final class ProfileImageService: ProfileImageServiceProtocol {
     
     private var task: URLSessionTask?
     
-    private(set) var avatarURL: String?
+    private(set) var avatarURL: URL?
     
     static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
 
@@ -55,7 +55,7 @@ final class ProfileImageService: ProfileImageServiceProtocol {
     func fetchProfileImageURL(
         username: String,
         token: String,
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<URL?, Error>) -> Void
     ) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in

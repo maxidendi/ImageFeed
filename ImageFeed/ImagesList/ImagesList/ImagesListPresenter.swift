@@ -101,7 +101,9 @@ extension ImagesListPresenter {
     }
     
     func tableViewWillDisplayRow(at indexPath: IndexPath) {
-        if indexPath.row + 1 == photos.count {
+        if indexPath.row + 1 == photos.count,
+           ProcessInfo.processInfo.arguments.contains("UITEST") == false
+        {
             fetchPhotoNextPage()
         }
     }
@@ -116,6 +118,7 @@ extension ImagesListPresenter {
     func heightForRow(at indexPath: IndexPath, insets: CGSize, width: CGFloat) -> CGFloat {
         let image = photos[indexPath.row]
         let imageViewWidth = width - insets.width * 2
+        guard image.size.width > 0 else { return 0 }
         let scale = imageViewWidth / image.size.width
         let cellHeith = image.size.height * scale + insets.height * 2
         return cellHeith

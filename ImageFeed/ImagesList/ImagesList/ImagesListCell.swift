@@ -71,6 +71,7 @@ final class ImagesListCell: UITableViewCell {
         let likeButton = UIButton()
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.setImage(UIImage(named: "no_active_like"), for: .normal)
+        likeButton.accessibilityIdentifier = "likeButton"
         return likeButton
     } ()
     
@@ -80,6 +81,7 @@ final class ImagesListCell: UITableViewCell {
         super.prepareForReuse()
         imageOfCell.kf.cancelDownloadTask()
         layers.forEach { $0.removeFromSuperlayer() }
+        likeButton.accessibilityIdentifier = "likeButton"
     }
     
     func configCell(
@@ -92,7 +94,7 @@ final class ImagesListCell: UITableViewCell {
         dateLabel.text = ImagesListCell.dateFormatter.string(for: photo.createdAt)
         imageOfCell.kf.indicatorType = .activity
         imageOfCell.kf.setImage(
-            with: URL(string: photo.smallImageURL),
+            with: photo.smallImageURL,
             placeholder: UIImage(named: "image_placeholder")) { [weak self] result in
                 guard let self else { return }
                 switch result {

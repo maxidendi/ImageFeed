@@ -36,7 +36,7 @@ final class ImagesListServiceStub: ImagesListServiceProtocol {
     func changeLike(
         index: Int,
         isLike: Bool,
-        _ completion: @escaping (Result<Void, any Error>) -> Void
+        _ completion: @escaping (Result<Void, Error>) -> Void
     ) {
         photosProvider[index].isLiked = isLike
         let void: Void

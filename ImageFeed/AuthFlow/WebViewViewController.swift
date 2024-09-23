@@ -6,7 +6,7 @@
 //
 
 import UIKit
-@preconcurrency import WebKit
+import WebKit
 
 protocol WebViewViewControllerProtocol: AnyObject {
     var presenter: WebViewPresenterProtocol? { get set }
@@ -31,6 +31,7 @@ final class WebViewViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.contentMode = .scaleToFill
         webView.backgroundColor = .ypWhite
+        webView.accessibilityIdentifier = "webView"
         return webView
     } ()
     
