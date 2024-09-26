@@ -7,35 +7,29 @@
 
 import UIKit
 
-final class AlertService {
+public protocol AlertServiceProtocol {
+    func showNetworkAlert(on vc: UIViewController?, _ completion: (() -> Void)?)
+    
+    func showNetworkAlertWithRetry(on vc: UIViewController?, _ completion: @escaping () -> Void)
+    
+    func showSureToLogout(on vc: UIViewController?, _ completion: @escaping () -> Void)
+}
+
+final class AlertService: AlertServiceProtocol {
     
     //MARK: - Init
     
     static let shared = AlertService()
-    
     private init() {}
-    
-    //MARK: - Structs
-    
-    private struct AlertModel {
-        let title: String
-        let message: String
-        let buttons: [AlertButton]
-    }
-    
-    private struct AlertButton {
-        let title: String
-        var completion: (() -> Void)? = nil
-    }
     
     //MARK: - Methods
     
-    private func showAlert(model: AlertModel)  -> UIAlertController {
+    func showAlert(model: AlertModel)  -> UIAlertController {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,
             preferredStyle: .alert)
-        
+        alert.view.accessibilityIdentifier = "alert"
         model.buttons.forEach { button in
             let action = UIAlertAction(
                 title: button.title,
@@ -46,7 +40,7 @@ final class AlertService {
         return alert
     }
     
-    func showNetworkAlert(on vc: UIViewController, _ completion: (() -> Void)? = nil) {
+    func showNetworkAlert(on vc: UIViewController?, _ completion: (() -> Void)?) {
         let button = AlertButton(
             title: "OK",
             completion: completion)
@@ -54,10 +48,10 @@ final class AlertService {
             title: "Что-то пошло не так",
             message: "Не удалось войти в систему(",
             buttons: [button])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
     
-    func showNetworkAlertWithRetry(on vc: UIViewController, _ completion: @escaping () -> Void) {
+    func showNetworkAlertWithRetry(on vc: UIViewController?, _ completion: @escaping () -> Void) {
         let firstButton = AlertButton(
             title: "Не надо")
         let secondButton = AlertButton(
@@ -67,10 +61,10 @@ final class AlertService {
             title: "Что-то пошло не так",
             message: "Попробовать еще раз?",
             buttons: [firstButton, secondButton])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
     
-    func showSureToLogout(on vc: UIViewController, _ completion: @escaping () -> Void) {
+    func showSureToLogout(on vc: UIViewController?, _ completion: @escaping () -> Void) {
         let firstButton = AlertButton(
             title: "Да",
             completion: completion)
@@ -80,6 +74,6 @@ final class AlertService {
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
             buttons: [firstButton, secondButton])
-        vc.present(showAlert(model: model), animated: true)
+        vc?.present(showAlert(model: model), animated: true)
     }
 }

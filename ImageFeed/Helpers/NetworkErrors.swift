@@ -17,7 +17,6 @@ enum NetworkErrors: Error, LocalizedError {
     case urlSessionError
     case invalidRequestError
     case otherError(Error)
-
     var errorDescription: String? {
         switch self {
         case .httpsStatusCodeError(let code):

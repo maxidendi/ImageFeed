@@ -23,16 +23,13 @@ final class AuthViewController: UIViewController {
     //MARK: - Properties
     
     private let alertPresenter = AlertService.shared
-    
     weak var delegate: AuthViewControllerDelegate?
-    
     private lazy var logo: UIImageView = {
         let logo = UIImageView(image: UIImage(named: "unsplash_logo"))
         logo.contentMode = .scaleAspectFit
         logo.translatesAutoresizingMaskIntoConstraints = false
         return logo
     } ()
-    
     private lazy var enterButton: UIButton = {
         let enterButton = UIButton(type: .custom)
         enterButton.translatesAutoresizingMaskIntoConstraints = false
@@ -42,6 +39,7 @@ final class AuthViewController: UIViewController {
         enterButton.backgroundColor = .ypWhite
         enterButton.layer.masksToBounds = true
         enterButton.layer.cornerRadius = 16
+        enterButton.accessibilityIdentifier = "enterButton"
         enterButton.addTarget(self, action: #selector(didTapEnterButton), for: .touchUpInside)
         return enterButton
     } ()
@@ -51,14 +49,23 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-        addLogo()
-        addEnterButton()
+        viewAddSubviews()
+        addLogoConstraints()
+        addEnterButtonConstraints()
         configureBackButton()
     }
     
     //MARK: - Methods
     
-    private func addLogo() {
+    private func viewAddSubviews() {
+        [logo,
+         enterButton].forEach{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+    }
+    
+    private func addLogoConstraints() {
         view.addSubview(logo)
         NSLayoutConstraint.activate([
             logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -68,7 +75,7 @@ final class AuthViewController: UIViewController {
         ])
     }
     
-    private func addEnterButton() {
+    private func addEnterButtonConstraints() {
         view.addSubview(enterButton)
         NSLayoutConstraint.activate([
             enterButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -80,9 +87,12 @@ final class AuthViewController: UIViewController {
     
     @objc private func didTapEnterButton() {
         guard let nc = navigationController else { return }
-        let wv = WebViewViewController()
-        wv.delegate = self
-        nc.pushViewController(wv, animated: true)
+        let webViewPresenter = WebViewPresenter(authHelper: AuthHelper())
+        let webViewViewController = WebViewViewController()
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
+        webViewViewController.delegate = self
+        nc.pushViewController(webViewViewController, animated: true)
     }
     
     private func configureBackButton() {
@@ -104,17 +114,17 @@ extension AuthViewController: WebViewViewControllerDelegate {
         didAuthenticateWithCode code: String
     ) {        
         navigationController?.popToRootViewController(animated: true)
-        UIBlockingProgressHUD.show()
+        UIProgressHUD.blockingShow()
         DispatchQueue.global().async {
             OAuth2Service.shared.fetchOAuthToken(withCode: code) { [weak self] result in
-                UIBlockingProgressHUD.dismiss()
+                UIProgressHUD.blockingDismiss()
                 guard let self else { return }
                 switch result {
                 case .success(let token):
                     OAuth2KeychainTokenStorage.shared.token = token
                     delegate?.didAuthenticate(self, with: token)
-                case .failure(_):
-                    alertPresenter.showNetworkAlert(on: self)
+                case .failure:
+                    alertPresenter.showNetworkAlert(on: self, nil)
                 }
             }
         }

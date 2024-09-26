@@ -2,10 +2,12 @@
 //  Constants.swift
 //  ImageFeed
 //
-//  Created by Денис Максимов on 25.07.2024.
+//  Created by Денис Максимов on 26.09.2024.
 //
 
 import Foundation
+
+//MARK: - Constants
 
 enum Constants {
     static let accessKey = "Xm9yREJzofNOp4fxpYuONdi-7ZwiTh-2r-VVZcV_XrM"

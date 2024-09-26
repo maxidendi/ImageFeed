@@ -29,13 +29,8 @@ final class ImagesListCell: UITableViewCell {
     //MARK: - Properties
     
     static let reuseIdentifier = "ImagesListCell"
-    
     weak var delegate: ImagesListCellDelegate?
-    
-    private let alertPresented = AlertService.shared
-    
     private var layers: Set<CALayer> = []
-    
     static private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -43,7 +38,6 @@ final class ImagesListCell: UITableViewCell {
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
-    
     private lazy var imageOfCell: UIImageView = {
         let imageOfCell = UIImageView()
         imageOfCell.isUserInteractionEnabled = true
@@ -54,13 +48,11 @@ final class ImagesListCell: UITableViewCell {
         imageOfCell.layer.cornerRadius = 16
         return imageOfCell
     } ()
-    
     private lazy var bottomGradient: UIView = {
         let gradient = UIView()
         gradient.translatesAutoresizingMaskIntoConstraints = false
         return gradient
     } ()
-    
     private lazy var dateLabel: UILabel = {
         let dateLabel = UILabel()
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -68,7 +60,6 @@ final class ImagesListCell: UITableViewCell {
         dateLabel.textColor = .ypWhite
         return dateLabel
     } ()
-    
     private lazy var likeButton: UIButton = {
         let likeButton = UIButton()
         likeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -81,31 +72,32 @@ final class ImagesListCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageOfCell.kf.cancelDownloadTask()
+        imageOfCell.image = nil
         layers.forEach { $0.removeFromSuperlayer() }
     }
     
     func configCell(
         with photo: Photo,
-        _ completion: @escaping (Result<Void, Error>) -> Void
+        _ completion: @escaping (Result<Void?, Error>) -> Void
     ) {
         likeButton.imageView?.image = photo.isLiked ?
                                 UIImage(named: "active_like") :
                                 UIImage(named: "no_active_like")
+        likeButton.accessibilityIdentifier = photo.isLiked ? "dislikeButton" : "likeButton"
         dateLabel.text = ImagesListCell.dateFormatter.string(for: photo.createdAt)
         imageOfCell.kf.indicatorType = .activity
         imageOfCell.kf.setImage(
-            with: URL(string: photo.smallImageURL),
+            with: photo.smallImageURL,
             placeholder: UIImage(named: "image_placeholder")) { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success(_):
+                case .success:
                     if bottomGradient.layer.sublayers == nil {
                         addBottomGradienLayer()
                     }
-                    let void: Void
-                    completion(.success(void))
-                case .failure(let error):
-                    completion(.failure(error))
+                    completion(.success(nil))
+                case .failure:
+                    break
                 }
             }
     }
@@ -114,6 +106,7 @@ final class ImagesListCell: UITableViewCell {
         let image = isLiked ? UIImage(named: "active_like") :
                               UIImage(named: "no_active_like")
         likeButton.setImage(image, for: .normal)
+        likeButton.accessibilityIdentifier = isLiked ? "dislikeButton" : "likeButton" 
     }
     
     private func addBottomGradienLayer() {
@@ -128,7 +121,7 @@ final class ImagesListCell: UITableViewCell {
         let layerGradient = CAGradientLayer()
         layers.insert(layerGradient)
         layerGradient.colors = [UIColor.ypBlack.withAlphaComponent(0.0).cgColor,
-                                UIColor.ypBlack.withAlphaComponent(0.2).cgColor]
+                                UIColor.ypBlack.withAlphaComponent(0.5).cgColor]
         layerGradient.frame = bottomGradient.bounds
         bottomGradient.layer.addSublayer(layerGradient)
     }

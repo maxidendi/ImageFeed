@@ -8,26 +8,36 @@
 import Foundation
 import SwiftKeychainWrapper
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var photosProvider: [Photo] { get set }
+    
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void?, Error>) -> Void)
+    func changeLike(
+        index: Int,
+        isLike: Bool,
+        _ completion: @escaping (Result<Void?, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     
     //MARK: - Singletone
-
-    static let shared = ImagesListService()
     
+    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
+    static let shared = ImagesListService()
     private init() {}
     
     //MARK: - Properties
     
     private var lastLoadedPage: Int = 1
-    
     private var photos: [Photo] = []
-    
+    private var nextPageTask: URLSessionTask?
+    private var likeTask: URLSessionTask?
+    private let keyChainStorage = OAuth2KeychainTokenStorage.shared
     private let queue = DispatchQueue(
         label: "customConcurrentQueue",
         qos: .userInteractive,
         attributes: .concurrent)
-    
-    private(set) var photosProvider: [Photo] {
+    var photosProvider: [Photo] {
         get {
             queue.sync {
                 photos
@@ -39,14 +49,7 @@ final class ImagesListService {
             }
         }
     }
-    
-    private var nextPageTask: URLSessionTask?
-    
-    private var likeTask: URLSessionTask?
-    
-    private let keyChainStorage = OAuth2KeychainTokenStorage.shared
-    
-    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
+
     
     //MARK: - Methods
     
@@ -57,6 +60,8 @@ final class ImagesListService {
         likeTask?.cancel()
     }
     
+    //Make requests
+    
     private func makePhotosNextPageRequest(token: String, page: Int) -> URLRequest? {
         var urlComponents = URLComponents(
             string: Constants.defaultBaseURLString + "/photos")
@@ -66,7 +71,7 @@ final class ImagesListService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -78,14 +83,16 @@ final class ImagesListService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = isLike ? "POST" : "DELETE"
         return request
     }
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
-        guard Thread.isMainThread 
+    //Fetching photos and changing likes
+    
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void?, Error>) -> Void) {
+        guard Thread.isMainThread
         else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
@@ -108,14 +115,13 @@ final class ImagesListService {
             }
             switch result {
             case .success(let photosResult):
-                let newPhotos = photosResult.map{ Photo(photoResult: $0) }
+                let newPhotos = photosResult.map{ Photo(from: $0) }
                 photosProvider.append(contentsOf: newPhotos)
                 lastLoadedPage += 1
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self)
-                let void: Void
-                completion(.success(void))
+                completion(.success(nil))
             case .failure(let error):
                 NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
@@ -129,7 +135,7 @@ final class ImagesListService {
     func changeLike(
         index: Int,
         isLike: Bool,
-        _ completion: @escaping (Result<Void, Error>) -> Void
+        _ completion: @escaping (Result<Void?, Error>) -> Void
     ) {
         guard Thread.isMainThread
         else {
@@ -154,9 +160,8 @@ final class ImagesListService {
             }
             switch result {
             case .success(let likedPhoto):
-                photosProvider[index].photoResult.likedByUser = likedPhoto.photo.likedByUser
-                let void: Void
-                completion(.success(void))
+                photosProvider[index].isLiked = likedPhoto.photo.likedByUser
+                completion(.success(nil))
             case .failure(let error):
                 NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))

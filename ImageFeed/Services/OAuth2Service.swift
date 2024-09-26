@@ -13,13 +13,11 @@ final class OAuth2Service {
     //MARK: - Singletone
 
     static let shared = OAuth2Service()
-    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
-    
     private var lastCode: String?
     
     //MARK: - Methods
@@ -37,7 +35,7 @@ final class OAuth2Service {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         return request
     }

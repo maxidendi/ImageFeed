@@ -7,20 +7,27 @@
 
 import Foundation
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol {
+    var avatarURL: URL? { get }
+    
+    func cleanProfileImage()
+    func fetchProfileImageURL(
+        username: String,
+        token: String,
+        completion: @escaping (Result<URL?, Error>) -> Void)
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     
     //MARK: - Singletone
 
     static let shared = ProfileImageService()
-    
     private init() {}
 
     //MARK: - Properties
     
     private var task: URLSessionTask?
-    
-    private(set) var avatarURL: String?
-    
+    private(set) var avatarURL: URL?
     static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
 
     //MARK: - Methods
@@ -36,7 +43,7 @@ final class ProfileImageService {
             assertionFailure("Failed to create URL")
             return nil
         }
-        var request = URLRequest(url: url, timeoutInterval: 10)
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         return request
@@ -45,7 +52,7 @@ final class ProfileImageService {
     func fetchProfileImageURL(
         username: String,
         token: String,
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<URL?, Error>) -> Void
     ) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
