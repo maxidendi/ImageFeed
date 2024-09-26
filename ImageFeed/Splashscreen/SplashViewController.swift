@@ -19,15 +19,10 @@ final class SplashViewController: UIViewController {
     //MARK: - Properties
     
     private let profileService = ProfileService.shared
-    
     private let profileImageService = ProfileImageService.shared
-    
     private let imagesListService = ImagesListService.shared
-    
     private let storage = OAuth2KeychainTokenStorage.shared
-    
     private let alertPresenter = AlertService.shared
-    
     private lazy var splashLogo: UIImageView = {
         let splashLogo = UIImageView(image: UIImage(named: "vector"))
         splashLogo.translatesAutoresizingMaskIntoConstraints = false
@@ -104,10 +99,8 @@ final class SplashViewController: UIViewController {
                 switchToImagesListFlow()
                 profileImageService.fetchProfileImageURL(
                     username: profile.username,
-                    token: token) { _ in
-                    //TODO: handle the failure while fetch user avatar URL (if needed)
-                    }
-            case .failure(_):
+                    token: token) { _ in }
+            case .failure:
                 alertPresenter.showNetworkAlert(on: self) { self.chooseTheFlowToContinue() }
             }
         }

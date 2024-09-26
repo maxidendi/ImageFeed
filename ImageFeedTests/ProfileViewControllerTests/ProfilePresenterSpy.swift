@@ -21,21 +21,8 @@ final class ProfilePresenterSpy: ProfilePresenterProtocol {
         viewDidLoadCalled = true
     }
     
-    func updateViewWith(profile: Profile) {
-      
-    }
-    
-    func updateViewAvatar() {
-        
-    }
-    
-    func logoutProfile() {
-        
-    }
-    
-    func viewDidTapLogoutButton() {
-        
-    }
-    
-    
+    func updateViewWith(profile: Profile) {}
+    func updateViewAvatar() {}
+    func logoutProfile() {}
+    func viewDidTapLogoutButton() {}
 }

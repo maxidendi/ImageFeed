@@ -42,4 +42,7 @@ final class ImagesListViewControllerSpy: UIViewController, ImagesListViewControl
     func updateTableViewAnimated(oldCount: Int, newCount: Int) {
         updateTableViewAnimatedCalled = true
     }
+    
+    func showProgressHud() {}
+    func hideProgressHud() {}
 }

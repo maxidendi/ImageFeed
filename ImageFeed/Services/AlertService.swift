@@ -20,25 +20,11 @@ final class AlertService: AlertServiceProtocol {
     //MARK: - Init
     
     static let shared = AlertService()
-    
     private init() {}
-    
-    //MARK: - Structs
-    
-    private struct AlertModel {
-        let title: String
-        let message: String
-        let buttons: [AlertButton]
-    }
-    
-    private struct AlertButton {
-        let title: String
-        var completion: (() -> Void)? = nil
-    }
     
     //MARK: - Methods
     
-    private func showAlert(model: AlertModel)  -> UIAlertController {
+    func showAlert(model: AlertModel)  -> UIAlertController {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,

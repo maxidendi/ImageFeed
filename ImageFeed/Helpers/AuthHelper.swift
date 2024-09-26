@@ -22,7 +22,7 @@ final class AuthHelper: AuthHelperProtocol {
     
     //MARK: - Properties
     
-    let configuration: AuthConfiguration
+    private let configuration: AuthConfiguration
     
     //MARK: - Methods
     

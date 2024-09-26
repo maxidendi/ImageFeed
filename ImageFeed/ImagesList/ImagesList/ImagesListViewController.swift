@@ -15,6 +15,8 @@ protocol ImagesListViewControllerProtocol: UIViewController {
     func configure(_ presenter: ImagesListPresenterProtocol)
     func setIsliked(cellIndex: IndexPath, isLiked: Bool)
     func updateTableViewAnimated(oldCount: Int, newCount: Int)
+    func showProgressHud()
+    func hideProgressHud()
 }
 
 protocol ImagesListCellDelegate: AnyObject {
@@ -22,6 +24,8 @@ protocol ImagesListCellDelegate: AnyObject {
 }
 
 final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
+    
+    //MARK: - Init and Deinit
     
     init(presenter: ImagesListPresenterProtocol
     ) {
@@ -33,10 +37,13 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        UIProgressHUD.dismiss()
+    }
+    
     //MARK: - Properties
     
     var presenter: ImagesListPresenterProtocol
-    
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         if #available(iOS 15.0, *) {
@@ -87,6 +94,14 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
                 }
             tableView.insertRows(at: indexPaths, with: .automatic)
         }
+    }
+    
+    func showProgressHud() {
+        UIProgressHUD.show()
+    }
+    
+    func hideProgressHud() {
+        UIProgressHUD.dismiss()
     }
     
     private func addTableView() {

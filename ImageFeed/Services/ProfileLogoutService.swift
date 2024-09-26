@@ -18,12 +18,13 @@ final class ProfileLogoutService {
     
     //MARK: - Methods
     
-    func logout() {
+    func logoutAndChangeRootViewController(to viewController: UIViewController) {
         cleanCookies()
         KeychainWrapper.standard.removeAllKeys()
         ProfileService.shared.cleanProfile()
         ProfileImageService.shared.cleanProfileImage()
         ImagesListService.shared.cleanImagesList()
+        changeRootViewController(to: viewController)
     }
     
     private func cleanCookies() {
@@ -37,5 +38,15 @@ final class ProfileLogoutService {
                     completionHandler: {})
             }
         }
+    }
+    
+    func changeRootViewController(to viewController: UIViewController) {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first
+         else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+        window.rootViewController = viewController
     }
 }

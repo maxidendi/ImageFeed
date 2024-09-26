@@ -26,10 +26,6 @@ final class ProfileViewControllerSpy: UIViewController, ProfileViewControllerPro
         presenter.view = self
     }
     
-    func updateProfileDetails(profile: Profile) {
-        
-    }
-    
     func actualProfileDetails() -> (name: String?, login: String?, description: String?) {
         return (nil, nil, nil)
     }
@@ -38,5 +34,5 @@ final class ProfileViewControllerSpy: UIViewController, ProfileViewControllerPro
         isAvatarUpdated = true
     }
     
-    
+    func updateProfileDetails(profile: Profile) {}
 }

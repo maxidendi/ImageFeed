@@ -13,7 +13,6 @@ final class OAuth2KeychainTokenStorage {
     //MARK: - Singletone
     
     static let shared = OAuth2KeychainTokenStorage()
-    
     private init() {}
     
     //MARK: - Properties

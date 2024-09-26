@@ -41,19 +41,11 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
         return cell
     }
     
-    func tableViewWillDisplayRow(at: IndexPath) {
-        
-    }
-    
-    func tableViewDidSelectRow(at indexPath: IndexPath) {
-        
-    }
-    
     func heightForRow(at indexPath: IndexPath, insets: CGSize, width: CGFloat) -> CGFloat {
         CGFloat()
     }
     
-    func viewCellDidTapLike(indexPath: IndexPath) {
-        
-    }
+    func tableViewWillDisplayRow(at: IndexPath) {}
+    func tableViewDidSelectRow(at indexPath: IndexPath) {}
+    func viewCellDidTapLike(indexPath: IndexPath) {}
 }

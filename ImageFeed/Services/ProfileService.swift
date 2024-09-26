@@ -21,13 +21,11 @@ final class ProfileService: ProfileServiceProtocol {
     //MARK: - Singletone
 
     static let shared = ProfileService()
-    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
-    
     private(set) var profile: Profile?
 
     //MARK: - Methods

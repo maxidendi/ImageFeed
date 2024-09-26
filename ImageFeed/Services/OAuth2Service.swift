@@ -13,13 +13,11 @@ final class OAuth2Service {
     //MARK: - Singletone
 
     static let shared = OAuth2Service()
-    
     private init() {}
     
     //MARK: - Properties
     
     private var task: URLSessionTask?
-    
     private var lastCode: String?
     
     //MARK: - Methods

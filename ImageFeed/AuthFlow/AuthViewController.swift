@@ -23,16 +23,13 @@ final class AuthViewController: UIViewController {
     //MARK: - Properties
     
     private let alertPresenter = AlertService.shared
-    
     weak var delegate: AuthViewControllerDelegate?
-    
     private lazy var logo: UIImageView = {
         let logo = UIImageView(image: UIImage(named: "unsplash_logo"))
         logo.contentMode = .scaleAspectFit
         logo.translatesAutoresizingMaskIntoConstraints = false
         return logo
     } ()
-    
     private lazy var enterButton: UIButton = {
         let enterButton = UIButton(type: .custom)
         enterButton.translatesAutoresizingMaskIntoConstraints = false
@@ -52,14 +49,23 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-        addLogo()
-        addEnterButton()
+        viewAddSubviews()
+        addLogoConstraints()
+        addEnterButtonConstraints()
         configureBackButton()
     }
     
     //MARK: - Methods
     
-    private func addLogo() {
+    private func viewAddSubviews() {
+        [logo,
+         enterButton].forEach{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+    }
+    
+    private func addLogoConstraints() {
         view.addSubview(logo)
         NSLayoutConstraint.activate([
             logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -69,7 +75,7 @@ final class AuthViewController: UIViewController {
         ])
     }
     
-    private func addEnterButton() {
+    private func addEnterButtonConstraints() {
         view.addSubview(enterButton)
         NSLayoutConstraint.activate([
             enterButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -117,7 +123,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 case .success(let token):
                     OAuth2KeychainTokenStorage.shared.token = token
                     delegate?.didAuthenticate(self, with: token)
-                case .failure(_):
+                case .failure:
                     alertPresenter.showNetworkAlert(on: self, nil)
                 }
             }

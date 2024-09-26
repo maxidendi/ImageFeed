@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 protocol WebViewViewControllerProtocol: AnyObject {
     var presenter: WebViewPresenterProtocol? { get set }
@@ -21,11 +21,8 @@ final class WebViewViewController: UIViewController {
     //MARK: - Properties
     
     var presenter: WebViewPresenterProtocol?
-    
     weak var delegate: WebViewViewControllerDelegate?
-    
     private var estimatedProgressObservation: NSKeyValueObservation?
-
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -34,7 +31,6 @@ final class WebViewViewController: UIViewController {
         webView.accessibilityIdentifier = "webView"
         return webView
     } ()
-    
     private lazy var progressView: UIProgressView = {
         let progressView = UIProgressView()
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -49,8 +45,9 @@ final class WebViewViewController: UIViewController {
         super.viewDidLoad()
         webView.navigationDelegate = self
         view.backgroundColor = .ypWhite
-        addWebView()
-        addProgressView()
+        viewAddSubviews()
+        addWebViewConstraints()
+        addProgressViewConstraints()
         presenter?.viewDidLoad()
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
@@ -63,7 +60,15 @@ final class WebViewViewController: UIViewController {
     
     //MARK: - Methods
     
-    private func addWebView() {
+    private func viewAddSubviews() {
+        [webView,
+         progressView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+    }
+    
+    private func addWebViewConstraints() {
         view.addSubview(webView)
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -73,7 +78,7 @@ final class WebViewViewController: UIViewController {
         ])
     }
     
-    private func addProgressView() {
+    private func addProgressViewConstraints() {
         view.addSubview(progressView)
         NSLayoutConstraint.activate([
             progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),

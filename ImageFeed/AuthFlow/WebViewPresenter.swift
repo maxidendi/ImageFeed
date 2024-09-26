@@ -26,7 +26,7 @@ final class WebViewPresenter: WebViewPresenterProtocol {
     //MARK: - Properties
     
     weak var view: WebViewViewControllerProtocol?
-    var authHelper: AuthHelperProtocol
+    private let authHelper: AuthHelperProtocol
     
     
     //MARK: - Methods

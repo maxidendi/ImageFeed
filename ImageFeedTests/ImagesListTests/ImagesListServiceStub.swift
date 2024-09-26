@@ -14,7 +14,7 @@ final class ImagesListServiceStub: ImagesListServiceProtocol {
     var fetchPhotosNextPageCalled: Bool = false
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void?, Error>) -> Void) {
         fetchPhotosNextPageCalled = true
         for _ in 0..<10 {
             let photo = Photo(
@@ -36,12 +36,9 @@ final class ImagesListServiceStub: ImagesListServiceProtocol {
     func changeLike(
         index: Int,
         isLike: Bool,
-        _ completion: @escaping (Result<Void, Error>) -> Void
+        _ completion: @escaping (Result<Void?, Error>) -> Void
     ) {
         photosProvider[index].isLiked = isLike
-        let void: Void
-        completion(.success(void))
+        completion(.success(nil))
     }
-    
-    
 }

@@ -36,13 +36,9 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     //MARK: - Properties
     
     weak var view: ImagesListViewControllerProtocol?
-    
     private(set) var photos: [Photo] = []
-    
     private let imagesListService: ImagesListServiceProtocol
-    
     private let alertPresenter: AlertServiceProtocol
-
     private var imagesListObserver: NSObjectProtocol?
     
     //MARK: - Methods
@@ -59,14 +55,14 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func fetchPhotoNextPage() {
-        UIProgressHUD.show()
+        view?.showProgressHud()
         imagesListService.fetchPhotosNextPage() { [weak self] result in
-            UIProgressHUD.dismiss()
             guard let self else { return }
+            view?.hideProgressHud()
             switch result {
-            case .success():
+            case .success:
                 break
-            case .failure(_):
+            case .failure:
                 alertPresenter.showNetworkAlertWithRetry(on: view) {
                     self.fetchPhotoNextPage()
                 }
@@ -89,11 +85,12 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
 extension ImagesListPresenter {
     
     func config(cell: ImagesListCell, forRowAt indexPath: IndexPath) -> ImagesListCell {
-        cell.configCell(with: photos[indexPath.row]) { [view] result in
+        cell.configCell(with: photos[indexPath.row]) { [weak self] result in
+            guard let self else { return }
             switch result {
-            case .success():
+            case .success:
                 view?.tableView.reloadRows(at: [indexPath], with: .automatic)
-            case .failure(_):
+            case .failure:
                 break
             }
         }
@@ -125,17 +122,17 @@ extension ImagesListPresenter {
     }
     
     func viewCellDidTapLike(indexPath: IndexPath) {
-        UIProgressHUD.blockingShow()
+        view?.showProgressHud()
         imagesListService.changeLike(
             index: indexPath.row,
             isLike: !photos[indexPath.row].isLiked) { [weak self] result in
-                UIProgressHUD.blockingDismiss()
                 guard let self else { return }
+                view?.hideProgressHud()
                 switch result {
-                case .success():
+                case .success:
                     photos = imagesListService.photosProvider
                     view?.setIsliked(cellIndex: indexPath, isLiked: photos[indexPath.row].isLiked)
-                case .failure(_):
+                case .failure:
                     alertPresenter.showNetworkAlert(on: view, nil)
                 }
             }

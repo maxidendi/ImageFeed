@@ -7,19 +7,6 @@
 
 import Foundation
 
-//MARK: - Constants
-
-public enum Constants {
-    static let accessKey = "Xm9yREJzofNOp4fxpYuONdi-7ZwiTh-2r-VVZcV_XrM"
-    static let secretKey = "xP9jWM24Ig4-ODmcqEIAmJmz5830HCeKjqLrsZtU5m4"
-    static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
-    static let accessScope = "public+read_user+write_likes"
-    static let defaultBaseURLString = "https://api.unsplash.com"
-    static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    static let decoder = JSONDecoder()
-    static let dateFormatter = ISO8601DateFormatter()
-}
-
 //MARK: - Auth Configuration
 
 struct AuthConfiguration {
@@ -33,7 +20,7 @@ struct AuthConfiguration {
     let defaultBaseURLString: String
     let authURLString: String
     static var standard: AuthConfiguration {
-        return AuthConfiguration(
+        return .init(
             accessKey: Constants.accessKey,
             secretKey: Constants.secretKey,
             redirectURI: Constants.redirectURI,

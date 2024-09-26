@@ -25,39 +25,31 @@ final class SingleImageViewController: UIViewController {
     //MARK: - Properties
     
     private var photo: Photo
-    
     private let alertPresenter = AlertService.shared
-    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     } ()
-    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: view.bounds)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.contentSize = imageView.bounds.size
         return scrollView
     } ()
-    
     private lazy var backButton: UIButton = {
         let backButton = UIButton(type: .custom)
         backButton.setImage(UIImage(named: "backward"), for: .normal)
-        backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.accessibilityIdentifier = "navBackButton"
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         return backButton
     } ()
-    
     private lazy var shareButton: UIButton = {
         let shareButton = UIButton(type: .custom)
         shareButton.setImage(UIImage(named: "share_button"), for: .normal)
-        shareButton.translatesAutoresizingMaskIntoConstraints = false
         shareButton.addTarget(self, action: #selector(didTapShareButton), for: .touchUpInside)
         return shareButton
     } ()
@@ -70,9 +62,10 @@ final class SingleImageViewController: UIViewController {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 0.01
         scrollView.maximumZoomScale = 1.25
-        addScrollViewWithImageView()
-        addBackButton()
-        addShareButton()
+        viewAddsSubviews()
+        addScrollViewWithImageViewConstraints()
+        addBackButtonConstraints()
+        addShareButtonConstraints()
         setImage()
     }
     
@@ -87,7 +80,7 @@ final class SingleImageViewController: UIViewController {
                 switch result {
                 case .success(let value):
                     rescaleAndCenterImageInScrollView(image: value.image)
-                case .failure(_):
+                case .failure:
                     if !isBeingDismissed {
                         alertPresenter.showNetworkAlertWithRetry(on: self) {
                             self.setImage()
@@ -116,8 +109,16 @@ final class SingleImageViewController: UIViewController {
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
     
-    private func addScrollViewWithImageView() {
-        view.addSubview(scrollView)
+    private func viewAddsSubviews() {
+        [scrollView,
+         backButton,
+         shareButton].forEach{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+    }
+    
+    private func addScrollViewWithImageViewConstraints() {
         scrollView.addSubview(imageView)
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -127,8 +128,7 @@ final class SingleImageViewController: UIViewController {
         ])
     }
     
-    private func addBackButton() {
-        view.addSubview(backButton)
+    private func addBackButtonConstraints() {
         NSLayoutConstraint.activate([
             backButton.widthAnchor.constraint(equalToConstant: 44),
             backButton.heightAnchor.constraint(equalToConstant: 44),
@@ -143,8 +143,7 @@ final class SingleImageViewController: UIViewController {
         imageView.kf.cancelDownloadTask()
     }
     
-    private func addShareButton() {
-        view.addSubview(shareButton)
+    private func addShareButtonConstraints() {
         NSLayoutConstraint.activate([
             shareButton.widthAnchor.constraint(equalToConstant: 50),
             shareButton.heightAnchor.constraint(equalToConstant: 50),

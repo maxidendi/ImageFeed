@@ -22,15 +22,12 @@ final class ProfileImageService: ProfileImageServiceProtocol {
     //MARK: - Singletone
 
     static let shared = ProfileImageService()
-    
     private init() {}
 
     //MARK: - Properties
     
     private var task: URLSessionTask?
-    
     private(set) var avatarURL: URL?
-    
     static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
 
     //MARK: - Methods

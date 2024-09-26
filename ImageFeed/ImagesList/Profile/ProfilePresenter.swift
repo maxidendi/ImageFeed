@@ -5,8 +5,7 @@
 //  Created by Денис Максимов on 21.09.2024.
 //
 
-import UIKit
-import Kingfisher
+import Foundation
 
 protocol ProfilePresenterProtocol: AnyObject {
     var view: ProfileViewControllerProtocol? { get set }
@@ -34,15 +33,10 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     //MARK: - Properties
     
     weak var view: ProfileViewControllerProtocol?
-    
     private var profileImageServiceObserver: NSObjectProtocol?
-    
     private let profileService: ProfileServiceProtocol
-    
     private let profileImageService: ProfileImageServiceProtocol
-    
     private let alertPresenter = AlertService.shared
-    
     private let imageloader: ProfileImageLoaderProtocol
     
     //MARK: - Methods
@@ -68,7 +62,7 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     func updateViewAvatar() {
         guard let url = profileImageService.avatarURL
         else { return }
-        imageloader.loadImage(from: url) { [weak self] result in
+        imageloader.loadImageData(from: url) { [weak self] result in
             guard let self else { return }
             switch result {
             case .success(let data):
@@ -87,13 +81,7 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     func logoutProfile() {
-        ProfileLogoutService.shared.logout()
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = scene.windows.first
-         else {
-            assertionFailure("Invalid window configuration")
-            return
-        }
-        window.rootViewController = SplashViewController()
+        let splashViewController = SplashViewController()
+        ProfileLogoutService.shared.logoutAndChangeRootViewController(to: splashViewController)
     }
 }

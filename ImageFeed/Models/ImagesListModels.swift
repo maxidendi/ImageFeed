@@ -11,7 +11,7 @@ struct LikedPhoto: Codable {
     let photo: PhotoResult
 }
 
-public struct PhotoResult: Codable {
+struct PhotoResult: Codable {
     let id: String
     let createdAt: String?
     let width: Int
@@ -21,7 +21,7 @@ public struct PhotoResult: Codable {
     var likedByUser: Bool
 }
 
-public struct UrlsResult: Codable {
+struct UrlsResult: Codable {
     let raw: String
     let full: String
     let regular: String
@@ -29,7 +29,7 @@ public struct UrlsResult: Codable {
     let thumb: String
 }
 
-public struct Photo {
+struct Photo {
     let id: String
     let size: CGSize
     let createdAt: Date?

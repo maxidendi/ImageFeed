@@ -11,14 +11,11 @@ import XCTest
 final class ProfileImageServiceStub: ProfileImageServiceProtocol {
     
     static let urlStub = URL(string:"https://example.com/avatar.jpg") 
-    
     var avatarURL: URL? = URL(string: "https://example.com/avatar.jpg")
-    
-    func cleanProfileImage() {
-        
-    }
     
     func fetchProfileImageURL(username: String, token: String, completion: @escaping (Result<URL?, any Error>) -> Void) {
         
     }
+    
+    func cleanProfileImage() {}
 }

@@ -8,14 +8,14 @@
 import Foundation
 import SwiftKeychainWrapper
 
-public protocol ImagesListServiceProtocol {
+protocol ImagesListServiceProtocol {
     var photosProvider: [Photo] { get set }
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void)
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void?, Error>) -> Void)
     func changeLike(
         index: Int,
         isLike: Bool,
-        _ completion: @escaping (Result<Void, Error>) -> Void)
+        _ completion: @escaping (Result<Void?, Error>) -> Void)
 }
 
 final class ImagesListService: ImagesListServiceProtocol {
@@ -23,22 +23,20 @@ final class ImagesListService: ImagesListServiceProtocol {
     //MARK: - Singletone
     
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
-
     static let shared = ImagesListService()
-    
     private init() {}
     
     //MARK: - Properties
     
     private var lastLoadedPage: Int = 1
-    
     private var photos: [Photo] = []
-    
+    private var nextPageTask: URLSessionTask?
+    private var likeTask: URLSessionTask?
+    private let keyChainStorage = OAuth2KeychainTokenStorage.shared
     private let queue = DispatchQueue(
         label: "customConcurrentQueue",
         qos: .userInteractive,
         attributes: .concurrent)
-    
     var photosProvider: [Photo] {
         get {
             queue.sync {
@@ -51,12 +49,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             }
         }
     }
-    
-    private var nextPageTask: URLSessionTask?
-    
-    private var likeTask: URLSessionTask?
-    
-    private let keyChainStorage = OAuth2KeychainTokenStorage.shared
+
     
     //MARK: - Methods
     
@@ -98,8 +91,8 @@ final class ImagesListService: ImagesListServiceProtocol {
     
     //Fetching photos and changing likes
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<Void, Error>) -> Void) {
-        guard Thread.isMainThread 
+    func fetchPhotosNextPage(_ completion: @escaping (Result<Void?, Error>) -> Void) {
+        guard Thread.isMainThread
         else {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
@@ -128,8 +121,7 @@ final class ImagesListService: ImagesListServiceProtocol {
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self)
-                let void: Void
-                completion(.success(void))
+                completion(.success(nil))
             case .failure(let error):
                 NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
@@ -143,7 +135,7 @@ final class ImagesListService: ImagesListServiceProtocol {
     func changeLike(
         index: Int,
         isLike: Bool,
-        _ completion: @escaping (Result<Void, Error>) -> Void
+        _ completion: @escaping (Result<Void?, Error>) -> Void
     ) {
         guard Thread.isMainThread
         else {
@@ -169,8 +161,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             switch result {
             case .success(let likedPhoto):
                 photosProvider[index].isLiked = likedPhoto.photo.likedByUser
-                let void: Void
-                completion(.success(void))
+                completion(.success(nil))
             case .failure(let error):
                 NetworkErrors.logError(.otherError(error), #file, #function, #line)
                 completion(.failure(error))
